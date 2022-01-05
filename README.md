@@ -26,7 +26,8 @@ See [megaTinyCore](https://github.com/SpenceKonde/megaTinyCore) for options
 ([some old](https://github.com/SpenceKonde/AVR-Guidance/blob/master/UPDI/jtag2updi.md)) 
 on how to program the microcontroller. There is a 2x3, 1.27mm pitch programming header
 built into the [replacement controller PCB](https://oshpark.com/shared_projects/OngJWKF3)
-for this purpose.
+for this purpose. The header can be accessed using an adapter such as 
+[this pogo pin based adapter](https://www.tindie.com/products/electronutlabs/pogoprog-model-d-pogo-pin-programmer-2-pack/).
 
 ## License
 The code is presented as-is with no guarantee or warranty. Use at your own risk.
