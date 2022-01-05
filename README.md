@@ -29,6 +29,21 @@ built into the [replacement controller PCB](https://oshpark.com/shared_projects/
 for this purpose. The header can be accessed using an adapter such as 
 [this pogo pin based adapter](https://www.tindie.com/products/electronutlabs/pogoprog-model-d-pogo-pin-programmer-2-pack/).
 
+## IDE Setup Tips
+###Microchip Studio
+- Project -> Properties (ALT+F7) 
+	- -> Toolchain -> Configuration: All Configurations 
+	- -> Toolchain -> AVR/GNU C Compiler -> Symbols -> Defined Symbols, ADD: F_CPU=10000000UL
+	- -> Build Events -> Post-build event command line -> "$(ToolchainDir)"\avr-objcopy.exe -O ihex -j .fuse --change-section-lma .fuse=0 "$(OutputFileName).elf" "$(OutputFileName)_fuses.hex"
+	- -> Toolchain -> AVR/GNU C Compiler -> Miscellaneous -> Other Flags -> add "-flto"
+	- -> Toolchain -> AVR/GNU C Link -> Miscellaneous -> Other Flags -> add "-mrelax"
+
+###Arduino IDE
+- Install megaTinyCore (https://github.com/SpenceKonde/megaTinyCore)
+- Tools -> Board: ATtiny1606, Chip: ATtiny1606, Clock: 10MHz (internal), millis()/micros() Timer: TCB0
+- Edit megaTinyCore platform.txt located at %LOCALAPPDATA%\Arduino15\packages\megaTinyCore\hardware\megaavr\<version>\platform.txt
+	- locate line that begins "compiler.c.elf.flags=" and remove "-mrelax"
+
 ## License
 The code is presented as-is with no guarantee or warranty. Use at your own risk.
 
