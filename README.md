@@ -3,8 +3,7 @@
 Firmware for a replacement Galaxy's Edge lightsaber blade controller.
 
 ## State of the Code
-It works. But probaly not useful to most people until the PCB design is released
-and components become available.
+It works.
 
 ## About
 This is firmware for an ATtiny806/1606 based replacement blade controller 
@@ -15,8 +14,8 @@ add support for those colors to the blade. Once that was achieved, the goal
 expanded to add more features.
 
 ## How To Use
-You'll need to [replace the blade controller in a Galaxy's Edge lightsaber blade with 
-a replacement controller](https://www.youtube.com/watch?v=M-DL8tl_s_o). 
+You'll need to [replace the blade controller in a Galaxy's Edge lightsaber blade](https://www.youtube.com/watch?v=M-DL8tl_s_o) 
+with a [replacement controller](https://oshpark.com/shared_projects/OngJWKF3). 
 
 This code can be compiled using the [Arduino IDE](https://www.arduino.cc/en/software)
 as long as you've installed [megaTinyCore](https://github.com/SpenceKonde/megaTinyCore). 
@@ -25,7 +24,9 @@ This code could also be compiled with
 
 See [megaTinyCore](https://github.com/SpenceKonde/megaTinyCore) for options 
 ([some old](https://github.com/SpenceKonde/AVR-Guidance/blob/master/UPDI/jtag2updi.md)) 
-on how to program the microcontroller. 
+on how to program the microcontroller. There is a 2x3, 1.27mm pitch programming header
+built into the [replacement controller PCB](https://oshpark.com/shared_projects/OngJWKF3)
+for this purpose.
 
 ## License
 The code is presented as-is with no guarantee or warranty. Use at your own risk.
