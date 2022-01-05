@@ -31,7 +31,7 @@ void loop() {
 		animate_handler();		// manipulate blade colors and segment brightness based on blade state
 
 		// call dmode_handler unless ONLY the DMODE disable switch it set		
-		if (switch_config ^ SW_DMODE_DISABLE_bp) {
+		if (switch_config ^ (1<<SW_DMODE_DISABLE_bp)) {
 			dmode_handler();	// adds custom colors and effects to the blade
 		}
 	}

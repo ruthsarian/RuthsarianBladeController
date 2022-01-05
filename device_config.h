@@ -13,13 +13,13 @@
 #define SW_WRITE_PROTECT_PORT		PORTB
 #define SW_WRITE_PROTECT_PIN_bm		PIN0_bm
 #define SW_WRITE_PROTECT_PIN_CTRL	PIN0CTRL
-#define SW_WRITE_PROTECT_bp			1
+#define SW_WRITE_PROTECT_bp			0
 
 // I/O pin for switch used to disable dmode
 #define SW_DMODE_DISABLE_PORT		PORTB
 #define SW_DMODE_DISABLE_PIN_bm		PIN1_bm
 #define SW_DMODE_DISABLE_PIN_CTRL	PIN1CTRL
-#define SW_DMODE_DISABLE_bp			2
+#define SW_DMODE_DISABLE_bp			1
 
 // how many milliseconds after power off before putting the MCU to sleep
 #define OFF_TO_SLEEP_TIME			10000

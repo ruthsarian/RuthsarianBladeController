@@ -107,7 +107,7 @@ void device_setup(void) {
 	eeprom_setup();
 
 	// if dmode is disabled and WP is not enabled, explicitly set dmode to stock 
-	if ((switch_config ^ SW_DMODE_DISABLE_bp) == 0) {
+	if ((switch_config ^ (1 << SW_DMODE_DISABLE_bp)) == 0) {
 		blade.dmode = DMODE_STOCK;
 		blade.dsubmode = DSUBMODE_NORMAL;
 	}
@@ -316,12 +316,12 @@ void record_switch_config(void) {
 
 	// read state of write protect switch and record
 	if ((SW_WRITE_PROTECT_PORT.IN & SW_WRITE_PROTECT_PIN_bm) == 0) {
-		switch_config |= 1 << SW_WRITE_PROTECT_bp;
+		switch_config |= (1 << SW_WRITE_PROTECT_bp);
 	}
 
 	// read state of dmode disable switch and record
 	if ((SW_DMODE_DISABLE_PORT.IN & SW_DMODE_DISABLE_PIN_bm) == 0) {
-		switch_config |= 1 << SW_DMODE_DISABLE_bp;
+		switch_config |= (1 << SW_DMODE_DISABLE_bp);
 	}
 	
 	// disable pullups to save power
