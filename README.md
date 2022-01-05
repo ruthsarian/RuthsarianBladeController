@@ -23,8 +23,9 @@ as long as you've installed [megaTinyCore](https://github.com/SpenceKonde/megaTi
 This code could also be compiled with 
 [Microchip Studio](https://www.microchip.com/en-us/tools-resources/develop/microchip-studio).
 
-See [megaTinyCore](https://github.com/SpenceKonde/megaTinyCore) for options on how to 
-program the microcontroller. 
+See [megaTinyCore](https://github.com/SpenceKonde/megaTinyCore) for options 
+([some old](https://github.com/SpenceKonde/AVR-Guidance/blob/master/UPDI/jtag2updi.md)) 
+on how to program the microcontroller. 
 
 ## License
 The code is presented as-is with no guarantee or warranty. Use at your own risk.
