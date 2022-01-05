@@ -133,8 +133,8 @@ void eeprom_store_state(void) {
 	uint16_t addr = EEPROM_START_ADDR;
 	uint8_t i;
 
-	// do not store to EEPROM if write-protect is enabled
-	if ((switch_config & (1 << SW_WRITE_PROTECT_bp)) == 0) {
+	// do not store to EEPROM if write-protect is enabled or dmode is enabled
+	if (switch_config == 0) {
 
 		#ifdef DEBUG_SERIAL_ENABLED
 			serial_sendString("\r\nStoring blade state in EEPROM...\r\n");
