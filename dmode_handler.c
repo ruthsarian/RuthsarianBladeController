@@ -129,11 +129,16 @@ void dmode_handler(void) {
 			serial_sendString(serial_buf);
 		#endif
 
+		// reset blade brightness to maximum when changing dsubmode (and dmode)
+		// this prevents the new dsubmode from inheriting the previous mode's
+		// brightness settings
+		set_blade_brightness(100);
+
 		switch (blade.dmode) {
 			case DMODE_MULTI_MODE:
 				for (uint8_t i=0;i<4;i++) {
 					set_custom_segment_color(i,
-						blade_multi_colors[blade.dsubmode % blade_multi_colors_len][i][0],
+						blade_multi_colors[blade.dsubmode % blade_multi_colors_len][i][0], 
 						blade_multi_colors[blade.dsubmode % blade_multi_colors_len][i][1],
 						blade_multi_colors[blade.dsubmode % blade_multi_colors_len][i][2]
 					);

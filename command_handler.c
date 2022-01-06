@@ -111,7 +111,6 @@ void command_handler(void) {
 					blade.state = BLADE_STATE_ON;
 					blade.color_state = color + (STOCK_BLADE_COLOR_TABLE_SAVI << 4);
 					set_blade_color();
-					set_blade_brightness(100);
 					set_max_blade_brightness(100);
 				}
 				break;
@@ -121,7 +120,6 @@ void command_handler(void) {
 					blade.state = BLADE_STATE_ON;
 					blade.color_state = color + (STOCK_BLADE_COLOR_TABLE_LEGACY << 4);
 					set_blade_color();
-					set_blade_brightness(100);
 					set_max_blade_brightness(100);
 				}
 				break;

@@ -312,20 +312,20 @@ void dump_segment_brightness(void) {
 	
 	serial_sendString("segment_brightness = {");
 	for(i=0;i<BLADE_SEGMENTS;i++) {
-		snprintf(serial_buf, SERIAL_BUF_LEN, "%d ", segment_brightness[i]);
+		snprintf(serial_buf, SERIAL_BUF_LEN, " %d", segment_brightness[i]);
 		serial_sendString(serial_buf);
 	}
 	serial_sendString("}\r\nmax_segment_brightness = {");
 	for(i=0;i<BLADE_SEGMENTS;i++) {
-		snprintf(serial_buf, SERIAL_BUF_LEN, "%d ", max_segment_brightness[i]);
+		snprintf(serial_buf, SERIAL_BUF_LEN, " %d", max_segment_brightness[i]);
 		serial_sendString(serial_buf);
 	}
 	serial_sendString("}\r\ntrue_segment_brightness = {");
 	for(i=0;i<BLADE_SEGMENTS;i++) {
-		snprintf(serial_buf, SERIAL_BUF_LEN, "%d ", true_segment_brightness[i]);
+		snprintf(serial_buf, SERIAL_BUF_LEN, " %d", true_segment_brightness[i]);
 		serial_sendString(serial_buf);
 	}
-	serial_sendString("\r\n\r\n");
+	serial_sendString(" }\r\n\r\n");
 }
 
 // dump contents of blade state struct to serial
