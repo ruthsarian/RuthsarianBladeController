@@ -226,10 +226,18 @@ void set_blade_color(void) {
 }
 
 void set_segment_brightness(uint8_t segment, uint8_t amount) {
-	while(amount > 100) {
-		amount -= 100;
+
+	// ensure segment is a value between 0 and BLADE_SEGMENTS.
+	segment %= BLADE_SEGMENTS;
+
+	// amount should be a percentage value from 0 to 100. 
+	// ensure amount is not greater than 100
+	if (amount > 100) {
+		amount = 100;
 	}
-	segment %= 4;
+
+	// segment_brightness is an 8-bit integer with a max value of 255
+	// calculate the amount percentage of 255
 	segment_brightness[segment] = (uint8_t)(((float)amount/100) * 255);
 }
 
@@ -240,10 +248,10 @@ void set_blade_brightness(uint8_t amount) {
 }
 
 void set_max_segment_brightness(uint8_t segment, uint8_t amount) {
-	while(amount > 100) {
-		amount -= 100;
-	}
 	segment %= 4;
+	if (amount > 100) {
+		amount = 100;
+	}
 	max_segment_brightness[segment] = (uint8_t)(((float)amount/100) * 255);
 }
 

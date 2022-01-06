@@ -113,6 +113,9 @@ void command_handler(void) {
 					set_blade_color();
 					set_max_blade_brightness(100);
 				}
+				#ifdef DEBUG_SERIAL_ENABLED
+					//dump_segment_brightness();
+				#endif
 				break;
 
 			case DATA_CMD_COLOR_LEGACY:

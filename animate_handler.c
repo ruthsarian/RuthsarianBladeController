@@ -41,8 +41,8 @@ void animate_handler(void) {
 					mem_blade(MEM_BLADE_BACKUP);		// backup blade state
 					blade.color_state += 0x10;			// record we're currently in a CLASH state
 					set_blade_color();					// set clash color
-					set_blade_brightness(100);			// set blade brightness to 100%;
-					set_max_blade_brightness(100);		//
+					set_blade_brightness(100);			// set blade brightness to 100%
+					set_max_blade_brightness(100);		// set max blade brightness to 100%
 					next_event_time = millis() + 40;	// end clash after 40ms
 					blade.state++;						// increment blade state counter
 				}
@@ -58,8 +58,8 @@ void animate_handler(void) {
 					next_event_time = millis() + 85;			// delay this many milliseconds until next step
 					switch (state_step) {
 						case 0:
-							set_max_blade_brightness(0);		// make sure the blade is off
-							set_blade_brightness(255);			//
+							set_blade_brightness(100);			// default blade brightness to 100%; dmode_handler() may change this later
+							set_max_blade_brightness(0);		// set max brightness to 0; effectively turning the blade off
 							blade_power_on();					// enable the blade's LDO
 							set_max_segment_brightness(0, 50);	// start turning segment 1 on
 							break;
@@ -102,8 +102,6 @@ void animate_handler(void) {
 					switch (state_step) {
 
 						case 0: // Set Power Off Animation Delay
-
-							//set_blade_brightness(100);	// set blade brightness to 100% prior to start of extinguish animation
 
 							// blade is in a legacy hilt
 							if ((blade.color_state >> 4) == STOCK_BLADE_COLOR_TABLE_LEGACY) {
