@@ -33,7 +33,7 @@ void command_handler(void) {
 			case DATA_CMD_ON_LEGACY:
 				last_on_time = time_now;
 				blade.state = BLADE_STATE_POWER_ON;
-				set_blade_brightness(0);
+				set_max_blade_brightness(0);
 
 				// do not alter dmode or reset variables if dmode is disabled
 				if ((switch_config & (1 << SW_DMODE_DISABLE_bp)) == 0) {
@@ -112,6 +112,7 @@ void command_handler(void) {
 					blade.color_state = color + (STOCK_BLADE_COLOR_TABLE_SAVI << 4);
 					set_blade_color();
 					set_blade_brightness(100);
+					set_max_blade_brightness(100);
 				}
 				break;
 
@@ -121,6 +122,7 @@ void command_handler(void) {
 					blade.color_state = color + (STOCK_BLADE_COLOR_TABLE_LEGACY << 4);
 					set_blade_color();
 					set_blade_brightness(100);
+					set_max_blade_brightness(100);
 				}
 				break;
 
@@ -157,9 +159,9 @@ void command_handler(void) {
 			case DATA_CMD_4_LEGACY:
 				if (blade.state != BLADE_STATE_OFF && blade.state != BLADE_STATE_POWER_OFF) {
 					last_off_time = time_now;
-					set_blade_brightness(0);        // shut off blade
-					blade_power_off();              // shut off LDO that powers RGB LEDs
-					blade.state = BLADE_STATE_OFF;  // set blade state to off
+					set_max_blade_brightness(0);	// shut off blade
+					blade_power_off();				// shut off LDO that powers RGB LEDs
+					blade.state = BLADE_STATE_OFF;	// set blade state to off
 				}
 
 			default:

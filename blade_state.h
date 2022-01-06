@@ -67,10 +67,12 @@
 #define DSUBMODE_FLICKER_DARK			4
 #define DSUBMODE_FLICKER_GRADIENT		5
 #define DSUBMODE_BREATHING				6
-#define DSUBMODE_BRIGHTNESS_66			7
-#define DSUBMODE_BRIGHTNESS_33			8
-#define DSUBMODE_BRIGHTNESS_10			9
-#define DSUBMODE_MAX					10	// a cheap way to keep track of how many dsubmodes there are
+#define DSUBMODE_STATIC_GRADIENT_1		7
+#define DSUBMODE_STATIC_GRADIENT_2		8
+#define DSUBMODE_BRIGHTNESS_66			9
+#define DSUBMODE_BRIGHTNESS_33			10
+#define DSUBMODE_BRIGHTNESS_10			11
+#define DSUBMODE_MAX					12	// a cheap way to keep track of how many dsubmodes there are
 
 // DMODE Timing Elements
 #define DMODE_THRESHOLD_TIME			1000	// remain powered off for less than this value in milliseconds to increment display mode (DMODE)
@@ -105,10 +107,18 @@ extern struct blade_state_struct blade;
 extern uint8_t state_loaded_from_eeprom;
 
 // GLOBAL: segment_color[4][3] - keep track of the blade segments' color
-extern uint8_t segment_color[BLADE_SEGMENTS][RGB_SIZE];
+extern volatile uint8_t segment_color[BLADE_SEGMENTS][RGB_SIZE];
 
-// GLOBAL: segment_brightness[4] - keep track of the blade segments' brightness
+// GLOBAL: segment_brightness[4] - keep track of a segment's brightness
 extern uint8_t segment_brightness[BLADE_SEGMENTS];
+
+// GLOBAL: max_segment_brightness[4] - keep track of a segment's maximum brightness; this is used mainly in 
+//         animating ignition and extinguish animations
+extern uint8_t max_segment_brightness[BLADE_SEGMENTS];
+
+// GLOBAL: true_segment_brightness[4] - keep track of a segment's brightness relative to maximum brightness
+//         this value is used by pwm_handler() to set a given segment's brightness
+extern volatile uint8_t true_segment_brightness[BLADE_SEGMENTS];
 
 // GLOBAL: stock_blade_colors[9][3] - blade color lookup table
 //         this table is used to lookup RGB color values for specific colors produced by STOCK blades
@@ -162,6 +172,12 @@ void set_segment_brightness(uint8_t segment, uint8_t amount);
 // set blade brightness by percent
 void set_blade_brightness(uint8_t amount);
 
+//
+void set_max_segment_brightness(uint8_t segment, uint8_t amount);
+
+// 
+void set_max_blade_brightness(uint8_t amount);
+
 // backup/restore the blade's color from memory (NOT EEPROM)
 //	operation = 0: backup current blade state
 // operation != 0: restore current blade state
@@ -177,6 +193,9 @@ void mem_segment_brightness(uint8_t operation);
 // operation != 0: restore current blade state
 void mem_blade(uint8_t operation);
 
+//
+void dump_segment_brightness(void);
+	
 // dump the contents of blade struct to serial
 void dump_blade_state(void);
 
@@ -185,6 +204,14 @@ void command_handler(void);
 
 // manage the blade if it's in a state that requires animation, such as power-on, power-off, clash
 void animate_handler(void);
+
+// calculate the brightness of each segment relative to its maximum brightness and store it
+// in the true_segment_brightness array. these calculated values will be used by pwm_handler()
+// to set the segment's actual brightness
+//
+// calculations are done outside of pwm_handler() because the floating-point calculations
+// were slowing pwm_handler() down too much
+void true_segment_brightness_handler(void);
 
 // manage custom display modes and animations
 void dmode_handler(void);

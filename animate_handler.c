@@ -42,6 +42,7 @@ void animate_handler(void) {
 					blade.color_state += 0x10;			// record we're currently in a CLASH state
 					set_blade_color();					// set clash color
 					set_blade_brightness(100);			// set blade brightness to 100%;
+					set_max_blade_brightness(100);		//
 					next_event_time = millis() + 40;	// end clash after 40ms
 					blade.state++;						// increment blade state counter
 				}
@@ -54,28 +55,29 @@ void animate_handler(void) {
 			// the blade is igniting; all legacy hilts and crystal colors have the same power-on timing
 			case BLADE_STATE_POWER_ON:
 				if (millis() > next_event_time) {
-					next_event_time = millis() + 85;		// delay this many milliseconds until next step
+					next_event_time = millis() + 85;			// delay this many milliseconds until next step
 					switch (state_step) {
 						case 0:
-							set_blade_brightness(0);		// make sure the blade is off
-							blade_power_on();				// enable the blade's LDO
-							set_segment_brightness(0, 50);	// start turning segment 1 on
+							set_max_blade_brightness(0);		// make sure the blade is off
+							set_blade_brightness(255);			//
+							blade_power_on();					// enable the blade's LDO
+							set_max_segment_brightness(0, 50);	// start turning segment 1 on
 							break;
 
 						case 1:
-							set_segment_brightness(0, 100);	// turning segment 1 on
-							set_segment_brightness(1, 50);	// start turning segment 2 on
+							set_max_segment_brightness(0, 100);	// turning segment 1 on
+							set_max_segment_brightness(1, 50);	// start turning segment 2 on
 							break;
 
 						case 2:
-							set_segment_brightness(1, 100);	// turning segment 2 on
-							set_segment_brightness(2, 50);	// start turning segment 3 on
+							set_max_segment_brightness(1, 100);	// turning segment 2 on
+							set_max_segment_brightness(2, 50);	// start turning segment 3 on
 							break;
 
 						case 3:
-							set_segment_brightness(2, 100);	// turning segment 3 on
-							set_segment_brightness(3, 100);	// turning segment 4 on
-							blade.state = BLADE_STATE_ON;	// blade is fully on
+							set_max_segment_brightness(2, 100);	// turning segment 3 on
+							set_max_segment_brightness(3, 100);	// turning segment 4 on
+							blade.state = BLADE_STATE_ON;		// blade is fully on
 							break;
 
 						default:
@@ -101,11 +103,7 @@ void animate_handler(void) {
 
 						case 0: // Set Power Off Animation Delay
 
-							set_blade_brightness(100);	// set blade brightness to 100% prior to start of extinguish animation
-														//
-														// TODO
-														// this is necessary unless code that sets brightness during extinguish is
-														// modified to read existing brightness and reduce existing brightness by some %
+							//set_blade_brightness(100);	// set blade brightness to 100% prior to start of extinguish animation
 
 							// blade is in a legacy hilt
 							if ((blade.color_state >> 4) == STOCK_BLADE_COLOR_TABLE_LEGACY) {
@@ -181,36 +179,36 @@ void animate_handler(void) {
 							break;
 
 						case 1:
-							set_segment_brightness(3, 66);  // start shutdown of segment 4; this entire process will take ~425ms
-							set_segment_brightness(3, 20);
+							set_max_segment_brightness(3, 66);  // start shutdown of segment 4; this entire process will take ~425ms
+							set_max_segment_brightness(3, 20);
 							break;
 
 						case 2:
-							set_segment_brightness(3, 33);
-							set_segment_brightness(2, 66);  // start shutdown of segment 3
+							set_max_segment_brightness(3, 33);
+							set_max_segment_brightness(2, 66);  // start shutdown of segment 3
 							break;
 
 						case 3:
-							set_segment_brightness(3, 0);   // shut off segment 4
-							set_segment_brightness(2, 33);
-							set_segment_brightness(1, 66);  // start shutdown of segment 2
+							set_max_segment_brightness(3, 0);   // shut off segment 4
+							set_max_segment_brightness(2, 33);
+							set_max_segment_brightness(1, 66);  // start shutdown of segment 2
 							break;
 
 						case 4:
-							set_segment_brightness(2, 0);   // shut off segment 3
-							set_segment_brightness(1, 33);
-							set_segment_brightness(0, 66);  // start shutdown of segment 1
+							set_max_segment_brightness(2, 0);   // shut off segment 3
+							set_max_segment_brightness(1, 33);
+							set_max_segment_brightness(0, 66);  // start shutdown of segment 1
 							break;
 
 						case 5:
-							set_segment_brightness(1, 0);   // shut off segment 2
-							set_segment_brightness(0, 33);
+							set_max_segment_brightness(1, 0);   // shut off segment 2
+							set_max_segment_brightness(0, 33);
 							break;
 
 						case 6:
-							set_segment_brightness(0, 0);	// shut off segment 1
-							blade_power_off();				// shut off LDO that powers RGB LEDs
-							blade.state = BLADE_STATE_OFF;	// set blade state to off
+							set_max_segment_brightness(0, 0);	// shut off segment 1
+							blade_power_off();					// shut off LDO that powers RGB LEDs
+							blade.state = BLADE_STATE_OFF;		// set blade state to off
 							break;
 
 						default:
@@ -247,5 +245,13 @@ void animate_handler(void) {
 				}
 				break;
 		}
+	}
+}
+
+void true_segment_brightness_handler(void) {
+	uint8_t i;
+
+	for(i=0;i<BLADE_SEGMENTS;i++) {
+		true_segment_brightness[i] = (uint8_t)(((float)max_segment_brightness[i]/255) * segment_brightness[i]);
 	}
 }

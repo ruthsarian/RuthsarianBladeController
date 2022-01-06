@@ -17,13 +17,15 @@
 
 struct blade_state_struct blade = {0, 0, 0, 0, 0};
 uint8_t state_loaded_from_eeprom = 0;
-uint8_t segment_color[BLADE_SEGMENTS][RGB_SIZE] = {
+volatile uint8_t segment_color[BLADE_SEGMENTS][RGB_SIZE] = {
 	{ 255,   0,   0},
 	{   0, 255,	  0},
 	{   0,   0, 255},
 	{ 255, 255, 255}
 };
 uint8_t segment_brightness[BLADE_SEGMENTS] = { 0, 0, 0, 0 };
+uint8_t max_segment_brightness[BLADE_SEGMENTS] = { 0, 0, 0, 0 };
+volatile uint8_t true_segment_brightness[BLADE_SEGMENTS];
 uint8_t stock_blade_colors[STOCK_BLADE_COLOR_LEN][RGB_SIZE] = {
 	//  RED, GRN, BLU
 	{  88, 112, 112 },  //  0:STOCK_BLADE_COLOR_WHITE
@@ -237,6 +239,20 @@ void set_blade_brightness(uint8_t amount) {
 	}
 }
 
+void set_max_segment_brightness(uint8_t segment, uint8_t amount) {
+	while(amount > 100) {
+		amount -= 100;
+	}
+	segment %= 4;
+	max_segment_brightness[segment] = (uint8_t)(((float)amount/100) * 255);
+}
+
+void set_max_blade_brightness(uint8_t amount) {
+	for (uint8_t i=0;i<4;i++) {
+		set_max_segment_brightness(i, amount);
+	}
+}
+
 void mem_segment_color(uint8_t operation) {
 	static uint8_t backup_segment_color[BLADE_SEGMENTS][RGB_SIZE] = {{0,0,0},{0,0,0},{0,0,0},{0,0,0}};
 	uint8_t s, c;
@@ -258,15 +274,18 @@ void mem_segment_color(uint8_t operation) {
 
 void mem_segment_brightness(uint8_t operation) {
 	static uint8_t backup_segment_brightness[BLADE_SEGMENTS] = {0,0,0,0};
+	static uint8_t backup_max_segment_brightness[BLADE_SEGMENTS] = {0,0,0,0};
 	uint8_t s;
 
 	if (operation == MEM_BLADE_BACKUP) {
 		for (s=0;s<BLADE_SEGMENTS;s++) {
 			backup_segment_brightness[s] = segment_brightness[s];
+			backup_max_segment_brightness[s] = max_segment_brightness[s];
 		}
 	} else {
 		for (s=0;s<BLADE_SEGMENTS;s++) {
 			segment_brightness[s] = backup_segment_brightness[s];
+			max_segment_brightness[s] = backup_max_segment_brightness[s];
 		}
 	}
 }
@@ -286,6 +305,27 @@ void mem_blade(uint8_t operation) {
 	// these two are broken into their own, separate functions as they may prove useful down the road.
 	mem_segment_color(operation);
 	mem_segment_brightness(operation);
+}
+
+void dump_segment_brightness(void) {
+	uint8_t i;
+	
+	serial_sendString("segment_brightness = {");
+	for(i=0;i<BLADE_SEGMENTS;i++) {
+		snprintf(serial_buf, SERIAL_BUF_LEN, "%d ", segment_brightness[i]);
+		serial_sendString(serial_buf);
+	}
+	serial_sendString("}\r\nmax_segment_brightness = {");
+	for(i=0;i<BLADE_SEGMENTS;i++) {
+		snprintf(serial_buf, SERIAL_BUF_LEN, "%d ", max_segment_brightness[i]);
+		serial_sendString(serial_buf);
+	}
+	serial_sendString("}\r\ntrue_segment_brightness = {");
+	for(i=0;i<BLADE_SEGMENTS;i++) {
+		snprintf(serial_buf, SERIAL_BUF_LEN, "%d ", true_segment_brightness[i]);
+		serial_sendString(serial_buf);
+	}
+	serial_sendString("\r\n\r\n");
 }
 
 // dump contents of blade state struct to serial

@@ -8,17 +8,21 @@
 #include "pwm.h"
 
 // keep track of current blade color bit depth reduction
-uint8_t color_derez = SINGLE_COLOR_DEREZ;
+volatile uint8_t color_derez = SINGLE_COLOR_DEREZ;
 
-// TimerA-based overflow interrupt service request; this triggers off the same timer used to drive PWM of RGB signals
-// responsible for PWMing the segments and changing the color PWM values when in multi-color mode
-ISR(TCA0_LUNF_vect) {									// trigger every time TCA0.LUNF overflows
+// pwm_handler() - responsible for PWMing the segments and changing the color PWM values when in multi-color mode
+//
+// TimerA-based overflow interrupt service request (ISR)
+//
+// this triggers off the same timer used to drive PWM of colors. this is critical for keeping color
+// and segment PWM operations in sync.
+ISR(TCA0_LUNF_vect) {
 	uint8_t current_segment = 0;
 	uint8_t current_segment_step = 0;
 	uint8_t status = 0;
 	uint8_t reg_PORTA = PORTA.OUT;
 	uint8_t r,g,b;
-
+	
 	// a timer/counter used to manage segment color and brightness
 	static uint8_t seg_timer = 0;
 	static uint8_t last_segment = 255;
@@ -63,7 +67,7 @@ ISR(TCA0_LUNF_vect) {									// trigger every time TCA0.LUNF overflows
 
 	// control the current segment's brightness by determining when to turn it on
 	if (color_derez != SINGLE_COLOR_DEREZ) {
-		if ( segment_brightness[current_segment] > 0 && ((~(segment_brightness[current_segment])>>(8-SEG_REZ)) & ((1 << SEG_REZ) - 1)) <= current_segment_step ) {
+		if ( true_segment_brightness[current_segment] > 0 && ((~(true_segment_brightness[current_segment])>>(8-SEG_REZ)) & ((1 << SEG_REZ) - 1)) <= current_segment_step ) {
 			switch (current_segment) {
 				case 0:
 					reg_PORTA &= ~(SEG1_PIN_bm);
@@ -84,22 +88,22 @@ ISR(TCA0_LUNF_vect) {									// trigger every time TCA0.LUNF overflows
 	} else {
 
 		// enable segment 1
-		if ( segment_brightness[0] > 0 && ((~(segment_brightness[0])>>(8-SEG_REZ)) & ((1 << SEG_REZ) - 1)) <= current_segment_step ) {
+		if ( true_segment_brightness[0] > 0 && ((~(true_segment_brightness[0])>>(8-SEG_REZ)) & ((1 << SEG_REZ) - 1)) <= current_segment_step ) {
 			reg_PORTA &= ~SEG1_PIN_bm;
 		}
 
 		// enable segment 2
-		if ( segment_brightness[1] > 0 && ((~(segment_brightness[1])>>(8-SEG_REZ)) & ((1 << SEG_REZ) - 1)) <= current_segment_step ) {
+		if ( true_segment_brightness[1] > 0 && ((~(true_segment_brightness[1])>>(8-SEG_REZ)) & ((1 << SEG_REZ) - 1)) <= current_segment_step ) {
 			reg_PORTA &= ~SEG2_PIN_bm;
 		}
 
 		// enable segment 3
-		if ( segment_brightness[2] > 0 && ((~(segment_brightness[2])>>(8-SEG_REZ)) & ((1 << SEG_REZ) - 1)) <= current_segment_step ) {
+		if ( true_segment_brightness[2] > 0 && ((~(true_segment_brightness[2])>>(8-SEG_REZ)) & ((1 << SEG_REZ) - 1)) <= current_segment_step ) {
 			reg_PORTA &= ~SEG3_PIN_bm;
 		}
 
 		// enable segment 4
-		if ( segment_brightness[3] > 0 && ((~(segment_brightness[3])>>(8-SEG_REZ)) & ((1 << SEG_REZ) - 1)) <= current_segment_step ) {
+		if ( true_segment_brightness[3] > 0 && ((~(true_segment_brightness[3])>>(8-SEG_REZ)) & ((1 << SEG_REZ) - 1)) <= current_segment_step ) {
 			reg_PORTA &= ~SEG4_PIN_bm;
 		}
 	}

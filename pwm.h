@@ -37,7 +37,7 @@
 extern "C" {
 #endif
 
-extern uint8_t color_derez;
+volatile extern uint8_t color_derez;
 
 void set_multi_mode(void);
 void set_single_mode(void);

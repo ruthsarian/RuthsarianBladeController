@@ -34,6 +34,15 @@ void loop() {
 		if (switch_config ^ (1<<SW_DMODE_DISABLE_bp)) {
 			dmode_handler();	// adds custom colors and effects to the blade
 		}
+
+		// calculate the true brightness of each segment
+		//
+		// this is done after both animate_handler() and dmode_handler() have had their
+		// chance to manipulate segment brightness.
+		//
+		// it's a lot of effort, but doing this allows animation effects to persist through
+		// ignition and extinguish, making the effects much cleaner.
+		true_segment_brightness_handler();
 	}
 }
 

@@ -63,7 +63,7 @@ void dmode_handler(void) {
 	}
 
 	// don't do anything while clash is in effect.
-	// if ( (blade.state & 0xF0) == BLADE_STATE_CLASH || (blade.state & 0xF0) == BLADE_STATE_OFF ) {
+	//if ( (blade.state & 0xF0) == BLADE_STATE_CLASH || (blade.state & 0xF0) == BLADE_STATE_OFF ) {
 	if ( (blade.state & 0xF0) == BLADE_STATE_CLASH ) {
 		return;
 	}
@@ -156,162 +156,169 @@ void dmode_handler(void) {
 			case DMODE_STOCK:
 			case DMODE_COLOR_PICKER_PICKED:
 
-				// handle blade flicker animation, but ONLY if the blade is on
-				// this is to prevent disruption of the power on/off animations
-				//
-				// in future, could do something where if segment_brightness[i] == 0 then
-				// don't process that segment
-				if ((blade.state & 0xF0) == BLADE_STATE_ON) {
-					switch (blade.dsubmode % DSUBMODE_MAX) {
-						case DSUBMODE_NORMAL:
-							break;
+				switch (blade.dsubmode % DSUBMODE_MAX) {
+					case DSUBMODE_NORMAL:
+						break;
 
-						// full blade flicker
-						case DSUBMODE_FLICKER_FULL:
-							// dim blade; use segment 0 to represent the brightness of the entire blade
-							if (segment_brightness[0] > 40) {
-								segment_brightness[0] *= .8;
+					// full blade flicker
+					case DSUBMODE_FLICKER_FULL:
+						// dim blade; use segment 0 to represent the brightness of the entire blade
+						if (segment_brightness[0] > 40) {
+							segment_brightness[0] *= .8;
+						}
+
+						// randomly pop blade
+						if ((rand() % 3) == 0) {
+							segment_brightness[0] += (255 - segment_brightness[0])*.5;
+						}
+
+						// copy brightness of segment 0 to rest of segments so entire blade has same brightness
+						segment_brightness[1] = segment_brightness[0];
+						segment_brightness[2] = segment_brightness[0];
+						segment_brightness[3] = segment_brightness[0];
+
+						next_step_time = millis() + 50;
+						break;
+
+					// segmented flicker
+					case DSUBMODE_FLICKER_SEGMENTED:
+						// dim blade
+						for (i=0; i<4; i++) {
+							if (segment_brightness[i] > 40) {
+								segment_brightness[i] *= .8;
 							}
+						}
 
-							// randomly pop blade
-							if ((rand() % 3) == 0) {
-								segment_brightness[0] += (255 - segment_brightness[0])*.5;
-							}
+						// brighten a random segment (why am i reusing a variable? oh well...)
+						next_step_time = (rand() % 4);
+						segment_brightness[next_step_time] += (255 - segment_brightness[next_step_time])*.5;
 
-							// copy brightness of segment 0 to rest of segments so entire blade has same brightness
-							segment_brightness[1] = segment_brightness[0];
-							segment_brightness[2] = segment_brightness[0];
-							segment_brightness[3] = segment_brightness[0];
+						next_step_time = millis() + 50;
+						break;
 
-							next_step_time = millis() + 50;
-							break;
+					case DSUBMODE_BREATHING:
 
-						// segmented flicker
-						case DSUBMODE_FLICKER_SEGMENTED:
-							// dim blade
-							for (i=0; i<4; i++) {
-								if (segment_brightness[i] > 40) {
-									segment_brightness[i] *= .8;
-								}
-							}
+						// determine increment or decrement based on even/odd of segment 0
+						if (segment_brightness[0] % 2) {
 
-							// brighten a random segment (why am i reusing a variable? oh well...)
-							next_step_time = (rand() % 4);
-							segment_brightness[next_step_time] += (255 - segment_brightness[next_step_time])*.5;
-
-							next_step_time = millis() + 50;
-							break;
-
-						case DSUBMODE_BREATHING:
-
-							// determine increment or decrement based on even/odd of segment 0
-							if (segment_brightness[0] % 2) {
-
-								if (segment_brightness[0] < 12) {
-									segment_brightness[0] = 8;
-									} else {
-									segment_brightness[0] -= 4;
-								}
+							if (segment_brightness[0] < 12) {
+								segment_brightness[0] = 8;
 							} else {
-
-								if (segment_brightness[0] > 250) {
-									segment_brightness[0] = 255;
-									} else {
-									segment_brightness[0] += 4;
-								}
+								segment_brightness[0] -= 4;
 							}
+						} else {
 
-							// propagate values
-							segment_brightness[1] = segment_brightness[0];
-							segment_brightness[2] = segment_brightness[0];
-							segment_brightness[3] = segment_brightness[0];
-
-							// set time between steps
-							next_step_time = millis() + 12;
-
-							// pause breathing at full brightness for a bit
-							if (segment_brightness[0] == 255) {
-								next_step_time += 1500;
-							}
-							break;
-
-						case DSUBMODE_BRIGHTNESS_66:
-							set_blade_brightness(66);
-							break;
-
-						case DSUBMODE_BRIGHTNESS_33:
-							set_blade_brightness(33);
-							break;
-
-						case DSUBMODE_BRIGHTNESS_10:
-							set_blade_brightness(10);
-							break;
-
-						case DSUBMODE_FLICKER_DARK:
-							// propagate flicker
-							segment_brightness[3] += ((segment_brightness[2] - segment_brightness[3]));
-							segment_brightness[2] += ((segment_brightness[1] - segment_brightness[2]));
-							segment_brightness[1] += ((segment_brightness[0] - segment_brightness[1])*.8);
-
-							// randomly flicker segment 0
-							if ((rand() % 10) == 0) {
-								segment_brightness[0] = (rand() % 60)+20;
-
-								// otherwise brighten segment 0
-								} else {
-								segment_brightness[0] += ((255 - segment_brightness[0])*.5);
-							}
-
-							next_step_time = millis() + 50;
-							break;
-
-						// only dim segment 0, then propagate
-						case DSUBMODE_FLICKER_BRIGHT:
-
-							// propagate flicker
-							for (i = 3; i > 0; i--) {
-								segment_brightness[i] += ((segment_brightness[i-1] - segment_brightness[i]));
-							}
-
-							// randomly flicker segment 0
-							if ((rand() % 5) == 0) {
-								segment_brightness[0] += (rand() % (255-segment_brightness[0]));
-
-							// otherwise dim segment 0
-							} else if (segment_brightness[0] > 20) {
-								segment_brightness[0] *= 0.8;
-							}
-
-							//as first segment gets dimmer the chance of a flicker increases
-							//if (random(8 - (segment_brightness[0]/32)) == 0) {
-
-							next_step_time = millis() + 50;
-							break;
-
-						// segment 0 flickers, other segments are some % of segment 0
-						case DSUBMODE_FLICKER_GRADIENT:
-
-							// propagate flicker
-							segment_brightness[1] = segment_brightness[0] * .7;
-							segment_brightness[2] = segment_brightness[0] * .5;
-							segment_brightness[3] = segment_brightness[0] * .3;
-
-							// flicker at random
-							if ((rand() % 5) == 0) {
+							if (segment_brightness[0] > 250) {
 								segment_brightness[0] = 255;
-
-								// or dim
-								} else if (segment_brightness[0] > 40) {
-								segment_brightness[0] *= 0.8;
+							} else {
+								segment_brightness[0] += 4;
 							}
+						}
 
-							next_step_time = millis() + 50;
-							break;
+						// propagate values
+						segment_brightness[1] = segment_brightness[0];
+						segment_brightness[2] = segment_brightness[0];
+						segment_brightness[3] = segment_brightness[0];
 
-						default:
-							blade.dsubmode = DSUBMODE_NORMAL;
-							break;
-					}
+						// set time between steps
+						next_step_time = millis() + 12;
+
+						// pause breathing at full brightness for a bit
+						if (segment_brightness[0] == 255) {
+							next_step_time += 1500;
+						}
+						break;
+
+					case DSUBMODE_BRIGHTNESS_66:
+						set_blade_brightness(66);
+						break;
+
+					case DSUBMODE_BRIGHTNESS_33:
+						set_blade_brightness(33);
+						break;
+
+					case DSUBMODE_BRIGHTNESS_10:
+						set_blade_brightness(10);
+						break;
+
+					case DSUBMODE_STATIC_GRADIENT_1:
+						set_segment_brightness(0, 100);
+						set_segment_brightness(1, 80);
+						set_segment_brightness(2, 60);
+						set_segment_brightness(3, 40);
+						break;
+
+					case DSUBMODE_STATIC_GRADIENT_2:
+						set_segment_brightness(0, 100);
+						set_segment_brightness(1, 75);
+						set_segment_brightness(2, 50);
+						set_segment_brightness(3, 25);
+						break;
+
+					case DSUBMODE_FLICKER_DARK:
+						// propagate flicker
+						segment_brightness[3] += ((segment_brightness[2] - segment_brightness[3]));
+						segment_brightness[2] += ((segment_brightness[1] - segment_brightness[2]));
+						segment_brightness[1] += ((segment_brightness[0] - segment_brightness[1])*.8);
+
+						// randomly flicker segment 0
+						if ((rand() % 10) == 0) {
+							segment_brightness[0] = (rand() % 60)+20;
+
+							// otherwise brighten segment 0
+						} else {
+							segment_brightness[0] += ((255 - segment_brightness[0])*.5);
+						}
+
+						next_step_time = millis() + 50;
+						break;
+
+					// only dim segment 0, then propagate
+					case DSUBMODE_FLICKER_BRIGHT:
+
+						// propagate flicker
+						for (i = 3; i > 0; i--) {
+							segment_brightness[i] += ((segment_brightness[i-1] - segment_brightness[i]));
+						}
+
+						// randomly flicker segment 0
+						if ((rand() % 5) == 0) {
+							segment_brightness[0] += (rand() % (255-segment_brightness[0]));
+
+						// otherwise dim segment 0
+						} else if (segment_brightness[0] > 20) {
+							segment_brightness[0] *= 0.8;
+						}
+
+						//as first segment gets dimmer the chance of a flicker increases
+						//if (random(8 - (segment_brightness[0]/32)) == 0) {
+
+						next_step_time = millis() + 50;
+						break;
+
+					// segment 0 flickers, other segments are some % of segment 0
+					case DSUBMODE_FLICKER_GRADIENT:
+
+						// propagate flicker
+						segment_brightness[1] = segment_brightness[0] * .7;
+						segment_brightness[2] = segment_brightness[0] * .5;
+						segment_brightness[3] = segment_brightness[0] * .3;
+
+						// flicker at random
+						if ((rand() % 5) == 0) {
+							segment_brightness[0] = 255;
+
+							// or dim
+						} else if (segment_brightness[0] > 40) {
+							segment_brightness[0] *= 0.8;
+						}
+
+						next_step_time = millis() + 50;
+						break;
+
+					default:
+						blade.dsubmode = DSUBMODE_NORMAL;
+						break;
 				}
 				break;
 
