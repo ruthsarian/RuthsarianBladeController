@@ -218,27 +218,54 @@ void animate_handler(void) {
 				}
 				break;
 
-			// will cause other modes to revert straight to this
-			// UNLESS
-			// change this command to flicker being a change in segment brightness
-			// then flicker would apply to any color the blade is currently set to
-			case BLADE_STATE_REDFLICKER:
+			// command sent by Kylo Ren legacy lightsaber that causes the blade to flicker
+			case BLADE_STATE_STOCK_FLICKER:
+
+				// There are two flicker commands. 
+				//   _FLICKER_1 = 0-50% brightness
+				//   _FLICKER_2 = 53-100% brightness
+				// 
+				// Flicker is two-steps. 
+				//   First step sets brightness for 40ms 
+				//   Second step drops brightness and it stays there until next command           
+				//
+				// This is not a perfect replication of the stock blade behavior, but
+				// it's close enough.
+
+				// first flicker step
 				if ((state_step & 1) == 0) {
+
+					// _FLICKER_1
 					if (state_step < 4) {
-						set_blade_custom_color((blade.color_state * 4) + 64, 0, 0);
+						set_blade_brightness((uint8_t)((float)(blade.color_state + 1) * 3.125));
+
+					// _FLICKER_2
 					} else {
-						set_blade_custom_color((blade.color_state * 4) + 128, 0, 0);
+						set_blade_brightness((uint8_t)((float)(blade.color_state + 17) * 3.125));
 					}
+
+					// increment blade state so code knows we're on step 2
 					blade.state++;
-					next_event_time = millis() + 10;
-				}
-				else if (millis() > next_event_time) {
+					next_event_time = millis() + 40;
+
+				// second flicker step
+				} else if (millis() > next_event_time) {
+
+					// _FLICKER_1
 					if (state_step < 4) {
-						set_blade_custom_color((blade.color_state * 4), 0, 0);
+						if (blade.color_state < 5) {
+							set_blade_brightness(0);
+						} else {
+							set_blade_brightness((uint8_t)((float)(blade.color_state - 5) * 3.125));
+						}
+
+					// _FLICKER_2
 					} else {
-						set_blade_custom_color((blade.color_state * 4) + 64, 0, 0);
+						set_blade_brightness((uint8_t)((float)(blade.color_state + 10) * 3.125));
 					}
-					blade.color_state = STOCK_BLADE_COLOR_RED;
+
+					// reset blade (?)
+					//blade.color_state = STOCK_BLADE_COLOR_RED;
 					blade.state = BLADE_STATE_ON;
 				}
 				break;

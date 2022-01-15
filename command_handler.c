@@ -128,15 +128,19 @@ void command_handler(void) {
 				break;
 
 			case DATA_CMD_REDFLICKER_1:
-				if (blade.dmode == DMODE_STOCK && (blade.state & 0xF0) == BLADE_STATE_ON) { // only flicker when the blade is on and in stock mode
-					blade.state = BLADE_STATE_REDFLICKER;
+
+				// only flicker if brightness is not being manipulated elsewhere (dmode_handler())
+				if ( blade.dmode == DMODE_BLADE_WHEEL || blade.dmode == DMODE_SEGMENT_WHEEL || blade.dmode == DMODE_MULTI_MODE || blade.dsubmode == DSUBMODE_NORMAL ) {
+					blade.state = BLADE_STATE_STOCK_FLICKER;
 					blade.color_state = color;
 				}
 				break;
 
 			case DATA_CMD_REDFLICKER_2:
-				if (blade.dmode == DMODE_STOCK && (blade.state & 0xF0) == BLADE_STATE_ON) { // only flicker when the blade is on and in stock mode
-					blade.state = BLADE_STATE_REDFLICKER | (1<<2);
+
+				// only flicker if brightness is not being manipulated elsewhere (dmode_handler())
+				if ( blade.dmode == DMODE_BLADE_WHEEL || blade.dmode == DMODE_SEGMENT_WHEEL || blade.dmode == DMODE_MULTI_MODE || blade.dsubmode == DSUBMODE_NORMAL ) {
+					blade.state = BLADE_STATE_STOCK_FLICKER | (1<<2);
 					blade.color_state = color;
 				}
 				break;
@@ -151,6 +155,13 @@ void command_handler(void) {
 			case DATA_CMD_OFF:
 			case DATA_CMD_OFF_LEGACY:
 				if (blade.state != BLADE_STATE_OFF && blade.state != BLADE_STATE_POWER_OFF) {  // prevent going into BLADE_STATE_POWER_OFF if blade is already off or turning off
+
+					// need to record color_state in order to align the timing of the extinguish with the sound the hilt produces
+					if (cmd == DATA_CMD_OFF) {
+						blade.color_state = color + (STOCK_BLADE_COLOR_TABLE_SAVI << 4);
+					} else {
+						blade.color_state = color + (STOCK_BLADE_COLOR_TABLE_LEGACY << 4);
+					}
 					last_off_time = time_now;
 					blade.state = BLADE_STATE_POWER_OFF;
 				}

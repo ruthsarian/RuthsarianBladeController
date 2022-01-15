@@ -8,13 +8,13 @@
 #define BLADE_STATE_H_
 
 // BLADE STATE
-#define BLADE_STATE_OFF         0x00
-#define BLADE_STATE_POWER_ON    0x10
-#define BLADE_STATE_ON          0x20
-#define BLADE_STATE_CLASH       0x30
-#define BLADE_STATE_POWER_OFF   0x40
-#define BLADE_STATE_REDFLICKER  0x50
-#define BLADE_STATE_RESET       0xF0
+#define BLADE_STATE_OFF				0x00
+#define BLADE_STATE_POWER_ON		0x10
+#define BLADE_STATE_ON				0x20
+#define BLADE_STATE_CLASH			0x30
+#define BLADE_STATE_POWER_OFF		0x40
+#define BLADE_STATE_STOCK_FLICKER	0x50
+#define BLADE_STATE_RESET			0xF0
 
 // how many segments in a blade
 #define BLADE_SEGMENTS	4
