@@ -104,12 +104,12 @@ BOM as necessary.
 |                    | [ATTINY1606-MF](https://www.mouser.com/ProductDetail/556-ATTINY1606-MF) |
 |             **U2** | 3.3V LDO, SOT23 package, <=1uA quiescent current, PINS: 1-GND, 2-OUT, 3-IN |
 |                    | [AP2138N-3.3TRG1](https://www.mouser.com/ProductDetail/621-AP2138N-3.3TRG1), [XC6206P331MR-G](https://www.mouser.com/ProductDetail/865-XC6206P331MR-G), [XC6206P332MR-G](https://www.mouser.com/ProductDetail/865-XC6206P332MR-G) |
-|             **U3** | 3.3V LDO, DFN-6 package, >1A continuous, PINS: 1-EN, 2-GND, 3-NC, 4-OUT, 5-NC, 6-IN |
+|             **U3** | 3.3V LDO, DFN-6 package, >1A, PINS: 1-EN, 2-GND, 3-NC, 4-OUT, 5-NC, 6-IN |
 |                    | [LDL112PV33R](https://www.mouser.com/ProductDetail/511-LDL112PV33R) |
 |             **L1** | >=3.3uH, 0805 package, >=1A |
 |                    | [LQM21PN3R3NGRD](https://www.mouser.com/ProductDetail/81-LQM21PN3R3NGRDRD), [LQM21PN3R3MGRD](https://www.mouser.com/ProductDetail/81-LQM21PN3R3MGRD) |
-|        **Q1 - Q4** | PNP (SS8550), SOT23 package, PINS: 1-B, 2-E, 3-C |
-|                    | [ZXTP2041FTA](https://www.mouser.com/ProductDetail/621-ZXTP2041FTA), [PMMT591A](https://www.mouser.com/ProductDetail/771-PMMT591AT%2FR) |
+|        **Q1 - Q4** | PNP, SOT23 package, PINS: 1-B, 2-E, 3-C |
+|                    | [MMSS8550](https://www.mouser.com/ProductDetail/833-MMSS8550-L-TP), [ZXTP2041FTA](https://www.mouser.com/ProductDetail/621-ZXTP2041FTA), [PMMT591A](https://www.mouser.com/ProductDetail/771-PMMT591AT%2FR) |
 |        **Q5 - Q7** | Nch MOSFET, SOT23 package, >=1A, PINS: 1-G, 2-S, 3-D |
 |                    | [BSH105](https://www.mouser.com/ProductDetail/771-BSH105215) |
 |        **C1, C7**  | 330uf electrolytic, 2.5mm lead spacing, >=6.3V |
