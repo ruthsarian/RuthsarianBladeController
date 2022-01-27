@@ -1,25 +1,85 @@
 <!-- https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax -->
 # Ruthsarian Blade Controller
-Firmware for a replacement Galaxy's Edge lightsaber blade controller.
+The Ruthsarian Blade Controller is a replacement blade controller for 
+lightsaber blades from [Galaxy's Edge](https://en.wikipedia.org/wiki/Star_Wars:_Galaxy%27s_Edge). 
+It replaces only [the blade controller](https://www.flickr.com/photos/ruthsarian/albums/72157719940747147), 
+but reuses the rest of the blade's hardware including the strip of RGB LEDs.
+
+This project was started after it was discovered by [Dead Bothans
+Society](https://www.youtube.com/channel/UC8jRkAtfVRbUhOumBRoJw4g)
+that Savi's Workshop lightsaber hilts [recognize orange and cyan kyber 
+crystals](https://www.youtube.com/watch?v=fNlXbNlJkZo) and will command
+the blade to ignite that color, but the blade will ignore the command. The
+goal was to enable blades to support those commands. That goal has been
+achieved, and more.
 
 ## State of the Project
 This project comprises of two components, the PCB and the firmware.
 
 The [PCB design](https://easyeda.com/ruthsarian/ruthsarian-blade-controller) 
-is more or less finalized. There may be multiple versions of the PCB presented 
-in the future that utilize different voltage regulators due to component 
-availability, but the overall design is complete and all versions will work
-with this firmware (unless otherwise noted).
+is more or less finalized. There are multiple versions of the PCB that utilize 
+different voltage regulators due to component availability, but the overall 
+design is complete and any future versions of the PCB will work with this 
+firmware.
 
-The firmware (presented here) is functional, but may see frequent changes as 
-features are added or altered to better suit the project as well including 
-changes to optimize speed and program size.
+The firmware is functional, but will likely see changes as features are added or 
+altered to better suit the project as well including changes to optimize 
+speed and program size.
 
 ## How To Use
-You'll need to [replace the blade controller in a Galaxy's Edge lightsaber 
-blade](https://www.youtube.com/watch?v=M-DL8tl_s_o) with a [replacement 
-blade controller](https://easyeda.com/ruthsarian/ruthsarian-blade-controller).
-The replacement blade controller is programmed with this firmware.
+The stock blade controller in a Galaxy's Edge lightsaber blade needs to
+be [replaced](https://www.youtube.com/watch?v=M-DL8tl_s_o) with a
+[Ruthsarian Blade Controller](https://easyeda.com/ruthsarian/ruthsarian-blade-controller). 
+The new blade controller is programmed with this firmware. 
+
+## The Microcontroller
+The project is centered on an [ATtiny806/1606 microcontroller](https://ww1.microchip.com/downloads/en/DeviceDoc/ATtiny806_1606_Data_Sheet_40002029A.pdf). 
+The difference between the 1606 and 806 is the 1606 has 16kb of programminmg 
+space, while the 806 has only 8kb. The 1606 is the preferred choice as some 
+functionality may need to be disabled in order to get this firmware to fit on
+an 806. However either one will work for this project.
+
+## Compiling the Firmware
+This code can be compiled using the [Arduino IDE](https://www.arduino.cc/en/software)
+as long as you've installed [megaTinyCore](https://github.com/SpenceKonde/megaTinyCore). 
+This code could also be compiled with [Microchip Studio](https://www.microchip.com/en-us/tools-resources/develop/microchip-studio).
+There may be other environments that this code will compiled, but Arduino IDE 
+and Microchip Studio are verified to work.
+
+## IDE Setup Tips
+### Microchip Studio
+- Project -\> Properties (ALT+F7) 
+	- -\> Toolchain -\> Configuration: All Configurations 
+	- -\> Toolchain -\> AVR/GNU C Compiler -\> Symbols -\> Defined Symbols, ADD: F_CPU=10000000UL
+	- -\> Build Events -\> Post-build event command line -\> "$(ToolchainDir)"\avr-objcopy.exe -O ihex -j .fuse --change-section-lma .fuse=0 "$(OutputFileName).elf" "$(OutputFileName)_fuses.hex"
+	- -\> Toolchain -\> AVR/GNU C Compiler -\> Miscellaneous -\> Other Flags -\> add "-flto"
+	- -\> Toolchain -\> AVR/GNU C Link -\> Miscellaneous -\> Other Flags -\> add "-mrelax"
+
+### Arduino IDE
+- Install megaTinyCore (https://github.com/SpenceKonde/megaTinyCore)
+- Tools -\> Board: ATtiny1606, Chip: ATtiny1606, Clock: 10MHz (internal), millis()/micros() Timer: TCB0
+- Edit megaTinyCore platform.txt located at %LOCALAPPDATA%\Arduino15\packages\megaTinyCore\hardware\megaavr\\*\<version\>*\platform.txt
+	- locate line that begins "compiler.c.elf.flags=" and remove "-mrelax"
+
+## Programming the Blade Controller
+The ATtiny806/1606 uses the UPDI programming interface/protocol to program
+the microcontroller.
+
+There are several options for programming the board. I have been using 
+[jtag2updi](https://github.com/SpenceKonde/jtag2updi) installed on an Arduino
+Nano for programming, however other solutions are certainly available. See 
+[megaTinyCore](https://github.com/SpenceKonde/AVR-Guidance/blob/master/UPDI/jtag2updi.md) 
+for options instructions on how to program the microcontroller. 
+
+There is a 2x3, 1.27mm pitch programming header on the PCB. This header can be 
+used to program the ATtiny806/1606 microcontroller. The pinout of this header 
+is described on the bottom of the PCB. While there are 6 pins in the header, 
+only 3 are needed to program the microcontroller: VCMU (power), UPDI, and GND.
+
+I use a 2x3, 1.27mm pitch pogo pin adapter to interface with that header. The
+[particular one I use](https://www.tindie.com/products/electronutlabs/pogoprog-model-d-pogo-pin-programmer-2-pack/)
+is not currently in stock, however alternatives may be found elsewhere. It's
+possible you could even [build your own](https://github.com/Pnoxi/AVR-ISP-Pogo-Pin-Adapter). 
 
 ## Firmware (Blade Controller) Operation
 The firmware provides the ability to apply different colors and animation 
@@ -86,6 +146,15 @@ OSHPark](https://oshpark.com/shared_projects/OngJWKF3). The PCB design
 files are [available through EasyEDA](https://easyeda.com/ruthsarian/ruthsarian-blade-controller) 
 if you wish to make your own changes or modifications to the PCB.
 
+### PCB Versions
+There are currently two different versions of the PCB: an 'H' version and an 
+'L' version. The two versions are the same in every way except in which
+voltage regulator is used to drive the LEDs. The 'H' version was developed first,
+however limited availability of ['H' version's voltage regulator](https://www.mouser.com/ProductDetail/511-LD39200PU33R)
+necessitated a modification to support [a different voltage regulator](https://www.mouser.com/ProductDetail/511-LDL112PV33R), 
+thus the 'L' version. Unfortunately both regulators (as of February 2022) are 
+now on backorder. 
+
 ### [PCB](https://en.wikipedia.org/wiki/Printed_circuit_board) [BOM](https://en.wikipedia.org/wiki/Bill_of_materials)
 The table below contains a list of all the components needed to assemble the 
 PCB. The rows with gray backgrounds contain example components that meet the 
@@ -122,55 +191,6 @@ BOM as necessary.
 |                    | [CR0402-FX-1001GLF](https://www.mouser.com/ProductDetail/652-CR0402FX-1001GLF) |
 |             **R8** | 10kOhm, 0402 package |
 |                    | [CR0402-JW-103GLF](https://www.mouser.com/ProductDetail/652-CR0402-JW-103GLF) |
-
-## The Microcontroller
-The project is centered on an [ATtiny806/1606 microcontroller](https://ww1.microchip.com/downloads/en/DeviceDoc/ATtiny806_1606_Data_Sheet_40002029A.pdf). 
-The difference between the 1606 and 806 is the 1606 has 16kb of programminmg 
-space, while the 806 has only 8kb. The 1606 is the preferred choice as some 
-functionality may need to be disabled in order to get this firmware to fit on
-an 806. However either one will work for this project.
-
-## Compiling the Firmware
-This code can be compiled using the [Arduino IDE](https://www.arduino.cc/en/software)
-as long as you've installed [megaTinyCore](https://github.com/SpenceKonde/megaTinyCore). 
-This code could also be compiled with [Microchip Studio](https://www.microchip.com/en-us/tools-resources/develop/microchip-studio).
-There may be other environments that this code will compiled, but Arduino IDE 
-and Microchip Studio are verified to work.
-
-## IDE Setup Tips
-### Microchip Studio
-- Project -\> Properties (ALT+F7) 
-	- -\> Toolchain -\> Configuration: All Configurations 
-	- -\> Toolchain -\> AVR/GNU C Compiler -\> Symbols -\> Defined Symbols, ADD: F_CPU=10000000UL
-	- -\> Build Events -\> Post-build event command line -\> "$(ToolchainDir)"\avr-objcopy.exe -O ihex -j .fuse --change-section-lma .fuse=0 "$(OutputFileName).elf" "$(OutputFileName)_fuses.hex"
-	- -\> Toolchain -\> AVR/GNU C Compiler -\> Miscellaneous -\> Other Flags -\> add "-flto"
-	- -\> Toolchain -\> AVR/GNU C Link -\> Miscellaneous -\> Other Flags -\> add "-mrelax"
-
-### Arduino IDE
-- Install megaTinyCore (https://github.com/SpenceKonde/megaTinyCore)
-- Tools -\> Board: ATtiny1606, Chip: ATtiny1606, Clock: 10MHz (internal), millis()/micros() Timer: TCB0
-- Edit megaTinyCore platform.txt located at %LOCALAPPDATA%\Arduino15\packages\megaTinyCore\hardware\megaavr\\*\<version\>*\platform.txt
-	- locate line that begins "compiler.c.elf.flags=" and remove "-mrelax"
-
-## Programming the Blade Controller
-The ATtiny806/1606 uses the UPDI programming interface/protocol to program
-the microcontroller.
-
-There are several options for programming the board. I have been using 
-[jtag2updi](https://github.com/SpenceKonde/jtag2updi) installed on an Arduino
-Nano for programming, however other solutions are certainly available. See 
-[megaTinyCore](https://github.com/SpenceKonde/AVR-Guidance/blob/master/UPDI/jtag2updi.md) 
-for options instructions on how to program the microcontroller. 
-
-There is a 2x3, 1.27mm pitch programming header on the PCB. This header can be 
-used to program the ATtiny806/1606 microcontroller. The pinout of this header 
-is described on the bottom of the PCB. While there are 6 pins in the header, 
-only 3 are needed to program the microcontroller: VCMU (power), UPDI, and GND.
-
-I use a 2x3, 1.27mm pitch pogo pin adapter to interface with that header. The
-[particular one I use](https://www.tindie.com/products/electronutlabs/pogoprog-model-d-pogo-pin-programmer-2-pack/)
-is not currently in stock, however alternatives may be found elsewhere. It's
-possible you could even [build your own](https://github.com/Pnoxi/AVR-ISP-Pogo-Pin-Adapter). 
 
 ## About Blade LEDs
 Galaxy's Edge lightsaber blades contain common-anode RGB LEDs. Each LED has
