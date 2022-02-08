@@ -327,7 +327,7 @@ void dmode_handler(void) {
 				// only step to next color if blade is in an on state.
 				// this prevents color-stepping during ignition and extinguish
 				if ((blade.state & 0xF0) == BLADE_STATE_ON) {
-					blade.dmode_step += (16 - ((blade.dsubmode % 8) * 2));        // dsubmode controls color 'resolution'
+					blade.dmode_step += 16 >> (blade.dsubmode % 5);					// 16,32,64,128,256 color resolution
 				}
 				set_color_by_wheel(blade.dmode_step);
 				next_step_time = millis() + 2000;
