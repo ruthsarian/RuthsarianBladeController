@@ -142,13 +142,14 @@ for an example of this setup.
 
 ## The Replacement Blade Controller PCB
 The PCB for the replacement blade controller may be [ordered through 
-OSHPark](https://oshpark.com/shared_projects/OngJWKF3). The PCB design 
+OSHPark](https://oshpark.com/shared_projects/asa59Q8P). The PCB design 
 files are [available through EasyEDA](https://easyeda.com/ruthsarian/ruthsarian-blade-controller) 
 if you wish to make your own changes or modifications to the PCB.
 
 ### PCB Versions
-There are currently two different versions of the PCB: an 'H' version and an 
-'L' version. The two versions are the same in every way except in which
+There are currently two different versions of the PCB: [an 'H' version](https://oshpark.com/shared_projects/NbIljZq0)
+and [an 'L' version](https://oshpark.com/shared_projects/asa59Q8P).
+The two versions are the same in every way except in which
 voltage regulator is used to drive the LEDs. The 'H' version was developed first,
 however limited availability of ['H' version's voltage regulator](https://www.mouser.com/ProductDetail/511-LD39200PU33R)
 necessitated a modification to support [a different voltage regulator](https://www.mouser.com/ProductDetail/511-LDL112PV33R), 
