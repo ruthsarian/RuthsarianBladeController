@@ -6,6 +6,6 @@
  * 
  * To compile and upload with the Arduino IDE, this project requires the
  * megaTinyCore Arduino core. For download and installation instructions
- * see https://giyup 
- * See the README for more information.
+ * see https://github.com/ruthsarian/RuthsarianBladeController
+ * 
  */
