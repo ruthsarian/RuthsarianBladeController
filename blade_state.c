@@ -28,18 +28,18 @@ uint8_t max_segment_brightness[BLADE_SEGMENTS] = { 0, 0, 0, 0 };
 volatile uint8_t true_segment_brightness[BLADE_SEGMENTS];
 uint8_t stock_blade_colors[STOCK_BLADE_COLOR_LEN][RGB_SIZE] = {
 	//  RED, GRN, BLU
-	{  88, 112, 112 },  //  0:STOCK_BLADE_COLOR_WHITE
+	{ 112, 112, 112 },  //  0:STOCK_BLADE_COLOR_WHITE
 	{ 255,   0,   0 },  //  1:STOCK_BLADE_COLOR_RED
-	{ 200, 102,   0 },  //  2:STOCK_BLADE_COLOR_ORANGE
-	{ 120, 152,   0 },  //  3:STOCK_BLADE_COLOR_YELLOW
+	{ 255, 102,   0 },  //  2:STOCK_BLADE_COLOR_ORANGE
+	{ 152, 152,   0 },  //  3:STOCK_BLADE_COLOR_YELLOW
 	{   0, 255,   0 },  //  4:STOCK_BLADE_COLOR_GREEN
 	{   0, 152, 152 },  //  5:STOCK_BLADE_COLOR_CYAN
 	{   0,   0, 255 },  //  6:STOCK_BLADE_COLOR_BLUE
-	{ 120,   0, 152 },  //  7:STOCK_BLADE_COLOR_PURPLE
+	{ 152,   0, 152 },  //  7:STOCK_BLADE_COLOR_PURPLE
 	{  16,   0,  32 },  //  8:STOCK_BLADE_COLOR_DARK_PURPLE
-	{ 104, 128, 128 },  //  9:STOCK_BLADE_COLOR_FLASH_WHITE
-	{ 208, 255,   0 },  // 10:STOCK_BLADE_COLOR_FLASH_YELLOW
-	{ 208,  64,   0 }   // 11:STOCK_BLADE_COLOR_FLASH_ORANGE
+	{ 128, 128, 128 },  //  9:STOCK_BLADE_COLOR_FLASH_WHITE
+	{ 255, 255,   0 },  // 10:STOCK_BLADE_COLOR_FLASH_YELLOW
+	{ 255,  64,   0 }   // 11:STOCK_BLADE_COLOR_FLASH_ORANGE
 };
 uint8_t stock_blade_color_table_lookup[STOCK_BLADE_COLOR_TABLES][STOCK_BLADE_COLORS_PER_TABLE] = {
 	{	// Savi's Workship Lightsabers Colors
@@ -119,7 +119,8 @@ uint8_t stock_blade_color_table_lookup[STOCK_BLADE_COLOR_TABLES][STOCK_BLADE_COL
 // functions that manipulate the blade's color and brightness
 // see blade_state.h for their purpose
 void set_custom_segment_color(uint8_t segment, uint8_t red, uint8_t green, uint8_t blue) {
-	segment_color[segment][RED_IDX] = red;
+	//segment_color[segment][RED_IDX] = red;
+	segment_color[segment][RED_IDX] = (uint8_t)((float)red * RED_ADJUST);
 	segment_color[segment][GRN_IDX] = green;
 	segment_color[segment][BLU_IDX] = blue;
 }

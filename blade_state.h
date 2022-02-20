@@ -21,6 +21,9 @@
 
 // BLADE COLOR
 
+// adjust RED channel value to match stock blades which use a series diode to drop it's brightness
+#define RED_ADJUST	.79
+
 // blade color table R, G, B index values
 #define RED_IDX	0
 #define GRN_IDX	1
@@ -78,7 +81,8 @@
 #define DMODE_THRESHOLD_TIME			1000	// remain powered off for less than this value in milliseconds to increment display mode (DMODE)
 #define DSUBMODE_THRESHOLD_TIME			3000	// remain powered off for less than this value in milliseconds, but more than DSUBMODE_THRESHOLD_TIME, to increment display sub-mode (DSUBMODE)
 
-#define COLOR_PICKER_BRIGHTNESS_LEVELS	4
+// color picker related variables
+#define COLOR_PICKER_BRIGHTNESS_LEVELS	5
 #define COLOR_PICKER_COLOR_COUNT		(uint8_t)(256 / COLOR_PICKER_BRIGHTNESS_LEVELS)
 #define COLOR_PICKER_MIDDLE_LEVEL		(uint8_t)((COLOR_PICKER_BRIGHTNESS_LEVELS - 1) / 2)
 
