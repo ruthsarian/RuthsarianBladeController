@@ -78,6 +78,10 @@
 #define DMODE_THRESHOLD_TIME			1000	// remain powered off for less than this value in milliseconds to increment display mode (DMODE)
 #define DSUBMODE_THRESHOLD_TIME			3000	// remain powered off for less than this value in milliseconds, but more than DSUBMODE_THRESHOLD_TIME, to increment display sub-mode (DSUBMODE)
 
+#define COLOR_PICKER_BRIGHTNESS_LEVELS	4
+#define COLOR_PICKER_COLOR_COUNT		(uint8_t)(256 / COLOR_PICKER_BRIGHTNESS_LEVELS)
+#define COLOR_PICKER_MIDDLE_LEVEL		(uint8_t)((COLOR_PICKER_BRIGHTNESS_LEVELS - 1) / 2)
+
 // MEM Operation
 #define MEM_BLADE_BACKUP				0
 #define MEM_BLADE_RESTORE				1
@@ -161,6 +165,18 @@ void set_segment_color_by_wheel(uint8_t segment, uint8_t wheel_value);
 
 // set the blade's color based on a single byte value
 void set_color_by_wheel(uint8_t color);
+
+//
+void set_segment_color_by_wheel_64(uint8_t segment, uint8_t wheel_value);
+
+//
+void set_color_by_wheel_64(uint8_t color);
+
+//
+void set_segment_color_by_wheel_with_brightness(uint8_t segment, uint8_t wheel_value, uint8_t brightness_levels);
+
+//
+void set_color_by_wheel_with_brightness(uint8_t color, uint8_t brightness_levels);
 
 // set the blade color using the stock color lookup tables and the value stored 
 // in the global blade_state variable

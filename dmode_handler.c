@@ -50,9 +50,10 @@ void dmode_handler(void) {
 
 				// color picker mode; allow clash to trigger manual color change
 				case DMODE_COLOR_PICKER:
-					next_step_time = millis() + 10000;						// pause auto-picker for 10 seconds
-					blade.dmode_step += (16 - ((blade.dsubmode % 8) * 2));	// dsubmode controls color 'resolution'
-					set_color_by_wheel(blade.dmode_step);					// display that color
+					next_step_time = millis() + 4000;					// pause auto-picker
+					blade.dmode_step += COLOR_PICKER_COLOR_COUNT;		// increment brightness level
+					set_color_by_wheel_with_brightness(					// display new color
+						blade.dmode_step, COLOR_PICKER_BRIGHTNESS_LEVELS);
 					break;
 
 				default:
@@ -92,11 +93,12 @@ void dmode_handler(void) {
 			// perform actions to set blade into correct state for the given mode
 			switch (blade.dmode) {
 				case DMODE_COLOR_PICKER_PICKED:
-					set_color_by_wheel(blade.dmode_step); // set the blade color
+					set_color_by_wheel_with_brightness(		// set the blade color
+						blade.dmode_step, COLOR_PICKER_BRIGHTNESS_LEVELS);
 					break;
 			}
 
-			state_loaded_from_eeprom = 0;             // clear flag
+			state_loaded_from_eeprom = 0;	// clear flag
 		}
 
 		// perform one-time initialization unique for the new dmode
@@ -110,7 +112,7 @@ void dmode_handler(void) {
 
 			case DMODE_BLADE_WHEEL:
 			case DMODE_COLOR_PICKER:
-				blade.dmode_step = (rand() % 16) * 17;     // pick a random starting color
+				blade.dmode_step = COLOR_PICKER_MIDDLE_LEVEL * COLOR_PICKER_COLOR_COUNT;
 
 			case DMODE_STOCK:
 			case DMODE_COLOR_PICKER_PICKED:
@@ -327,9 +329,25 @@ void dmode_handler(void) {
 				// only step to next color if blade is in an on state.
 				// this prevents color-stepping during ignition and extinguish
 				if ((blade.state & 0xF0) == BLADE_STATE_ON) {
-					blade.dmode_step += 16 >> (blade.dsubmode % 5);					// 16,32,64,128,256 color resolution
+
+					// blade.dmode_step = (blade.dmode_step & 0xC0) + ((blade.dmode_step + (1 << (2 - (blade.dsubmode % 3)))) % 64);		// 16, 32, 64 color resolution
+					blade.dmode_step += (1 << (blade.dsubmode % 3));
+
+					// did we rollover on brightness?
+					if ((blade.dmode_step % COLOR_PICKER_COLOR_COUNT) < (1 << (blade.dsubmode % 3))) {
+
+						/*						
+						#ifdef DEBUG_SERIAL_ENABLED
+						snprintf(serial_buf, SERIAL_BUF_LEN, "Rollover Detected! : (%d mod %d) < %d", blade.dmode, COLOR_PICKER_COLOR_COUNT, (1 << (blade.dsubmode % 3)));
+						serial_sendString(serial_buf);
+						#endif
+						*/
+
+						// then reduce by 1 brightness level
+						blade.dmode_step -= COLOR_PICKER_COLOR_COUNT; 
+					}
 				}
-				set_color_by_wheel(blade.dmode_step);
+				set_color_by_wheel_with_brightness(blade.dmode_step, COLOR_PICKER_BRIGHTNESS_LEVELS);
 				next_step_time = millis() + 2000;
 				break;
 

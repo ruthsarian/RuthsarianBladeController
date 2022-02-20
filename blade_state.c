@@ -194,6 +194,155 @@ void rotate_segment_color(uint8_t direction) {
 	}
 }
 
+void set_segment_color_by_wheel_with_brightness(uint8_t segment, uint8_t wheel_value, uint8_t brightness_levels) {
+
+	uint8_t red, green, blue, color, brightness, formula_separator, color_count, middle_brightness_level;
+
+	// constrain brightness_levels to a value from 1 to 32
+	if (brightness_levels == 0) {
+		brightness_levels = 1;
+	} else if (brightness_levels > 32) {
+		brightness_levels = 32;
+	}
+
+	// calculate many colors there are given the number of brightness levels
+	color_count = (uint8_t)(256 / brightness_levels);
+
+	// calculate value at which the 3 color formulas are separated
+	formula_separator = (uint8_t)(color_count / 3);
+
+	// calculate the brightness level at which the normal color will appear
+	// brightness levels below this will be darkened, levels above will be brightened
+	middle_brightness_level = (uint8_t)((brightness_levels - 1) / 2);
+
+	// separate color and brightness values from the supplied wheel value
+	color = wheel_value % color_count;
+	brightness = (uint8_t)(wheel_value / color_count);
+
+	// calculate the red, green, and blue components of the color based on color value.
+	//
+	// this formula is based on the wheel() function found here:
+	// https://learn.adafruit.com/multi-tasking-the-arduino-part-3/utility-functions
+	if (color < formula_separator) {
+		green = color * 3 * brightness_levels;
+		red = ~green;
+		blue = 0;
+	} else if (color < (2 * formula_separator)) {
+		color -= formula_separator;
+		blue = color * 3 * brightness_levels;
+		green = ~blue;
+		red = 0;
+	} else {
+		color -= (2 * formula_separator);
+		red = color * 3 * brightness_levels;
+		blue = ~red;
+		green = 0;
+	}
+
+	// brighten the color if brightness > middle_brightness_level
+	if (brightness > middle_brightness_level) {
+		red   -= (uint8_t)((red   - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][RED_IDX]) * ((float)(brightness - middle_brightness_level)/(brightness_levels - middle_brightness_level - 1)));
+		green -= (uint8_t)((green - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][GRN_IDX]) * ((float)(brightness - middle_brightness_level)/(brightness_levels - middle_brightness_level - 1)));
+		blue  -= (uint8_t)((blue  - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][BLU_IDX]) * ((float)(brightness - middle_brightness_level)/(brightness_levels - middle_brightness_level - 1)));
+
+	// darken the color if brightness < middle_brightness_level
+	} else if (brightness < middle_brightness_level) {
+		red   >>= (middle_brightness_level - brightness);
+		green >>= (middle_brightness_level - brightness);
+		blue  >>= (middle_brightness_level - brightness);
+	}
+
+	set_custom_segment_color(segment, red, green, blue);
+
+	#ifdef DEBUG_SERIAL_ENABLED
+	if (segment == 0) {
+		snprintf(serial_buf, SERIAL_BUF_LEN, "BRITE: %d (%d,%d) = %03d, %03d, %03d; %d - %d\r\n", wheel_value, color, brightness, red, green, blue, brightness_levels, middle_brightness_level);
+		serial_sendString(serial_buf);
+	}
+	#endif
+}
+
+void set_color_by_wheel_with_brightness(uint8_t color, uint8_t brightness_levels) {
+	uint8_t i;
+
+	// calculate color for first segment
+	set_segment_color_by_wheel_with_brightness(0, color, brightness_levels);
+	
+	// copy values from first segment to other 3 segments
+	for (i=1;i<3;i++) {
+		segment_color[i][RED_IDX] = segment_color[0][RED_IDX];
+		segment_color[i][GRN_IDX] = segment_color[0][GRN_IDX];
+		segment_color[i][BLU_IDX] = segment_color[0][BLU_IDX];
+	}
+}
+
+void set_segment_color_by_wheel_64(uint8_t segment, uint8_t wheel_value) {
+
+	uint8_t r,g,b,v,brightness;
+
+	// calculate brightness level	
+	brightness = wheel_value >> 6;
+
+	// grab the color value
+	v = wheel_value & 0x3F;
+
+	// special case where max brightness is always white
+	if (brightness == 3) {
+		r = stock_blade_colors[STOCK_BLADE_COLOR_WHITE][RED_IDX];
+		g = stock_blade_colors[STOCK_BLADE_COLOR_WHITE][GRN_IDX];
+		b = stock_blade_colors[STOCK_BLADE_COLOR_WHITE][BLU_IDX];
+
+	} else {
+
+		// calculate red, green, and blue values
+		if (v < 21) {
+			g = (v * 12) + (v > 0 ? 3 : 0);
+			r = ~g;
+			b = 0;
+		} else if (v < 42) {
+			v -= 21;
+			b = (v * 12) + (v > 0 ? 3 : 0);
+			g = ~b;
+			r = 0;
+		} else {
+			v -= 42;
+			r = (v * 12) + (v > 0 ? 3 : 0);
+			b = ~r;
+			g = 0;
+		}
+
+		// adjust calculated color values based on brightness level
+		switch(brightness) {
+			case 0:
+				r >>= 1;
+				g >>= 1;
+				b >>= 1;
+				break;
+			case 2:
+				r -= ((r - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][RED_IDX]) * .33); // >> 1);
+				g -= ((g - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][GRN_IDX]) * .33); // >> 1);
+				b -= ((b - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][BLU_IDX]) * .33); // >> 1);
+				break;
+		}
+	}
+
+	set_custom_segment_color(segment, r, g, b);
+
+	#ifdef DEBUG_SERIAL_ENABLED
+	if (segment == 0) {
+		snprintf(serial_buf, SERIAL_BUF_LEN, "COL64: %d (%d,%d) = %03d, %03d, %03d\r\n", wheel_value, v, brightness, r, g, b);
+		serial_sendString(serial_buf);
+	}
+	#endif
+}
+
+void set_color_by_wheel_64(uint8_t color) {
+	uint8_t i;
+	for (i=0;i<3;i++) {
+		set_segment_color_by_wheel_64(i, color);
+	}
+}
+
 void set_segment_color_by_wheel(uint8_t segment, uint8_t wheel_value) {
 	if (wheel_value < 85 ) {
 		set_custom_segment_color(segment, ~(wheel_value * 3), (wheel_value * 3), 0);
