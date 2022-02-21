@@ -52,6 +52,13 @@ void dmode_handler(void) {
 				case DMODE_COLOR_PICKER:
 					next_step_time = millis() + 4000;					// pause auto-picker
 					blade.dmode_step += COLOR_PICKER_COLOR_COUNT;		// increment brightness level
+
+					// if overflow on brightness change, need to adjust count because sometimes
+					// COLOR_PICKER_BRIGHTNESS_LEVELS does not divide evently into 256
+					if (blade.dmode_step < COLOR_PICKER_COLOR_COUNT) {
+						blade.dmode_step += 256 - (COLOR_PICKER_COLOR_COUNT * COLOR_PICKER_BRIGHTNESS_LEVELS);
+					}
+
 					set_color_by_wheel_with_brightness(					// display new color
 						blade.dmode_step, COLOR_PICKER_BRIGHTNESS_LEVELS);
 					break;
