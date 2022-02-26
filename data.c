@@ -84,16 +84,14 @@ void data_handler(void) {
 				data_cmd = cmd;						// copy decoded command to the global variable which will be picked up by command_handler()
 				bit_cnt = 0;
 				cmd = 0;
-
-			/*
-				#ifdef DEBUG_SERIAL_ENABLED
+				
+/*				#ifdef DEBUG_SERIAL_ENABLED
 					serial_sendString("CMD: ");
 					snprintf(serial_buf, SERIAL_BUF_LEN, "%02x", data_cmd);
 					serial_sendString(serial_buf);
 					serial_sendString("\r\n");
 				#endif
-			*/
-			}
+*/			}
 		} else {	// if active over 10ms then it's likely a preamble to an incoming command, so reset bit count and command byte values
 			bit_cnt = 0;
 			cmd = 0;

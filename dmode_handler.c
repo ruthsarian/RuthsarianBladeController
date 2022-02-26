@@ -38,6 +38,9 @@ void dmode_handler(void) {
 	static uint8_t last_blade_state = 0;
 	static uint32_t next_step_time = 0;
 	uint8_t i;
+	uint8_t dcp_step;
+	uint8_t dcp_color_value;
+	uint8_t dcp_formula_value;
 
 	// check for state in blade changes
 	if (last_blade_state != blade.state) {
@@ -54,7 +57,7 @@ void dmode_handler(void) {
 					blade.dmode_step += COLOR_PICKER_COLOR_COUNT;		// increment brightness level
 
 					// if overflow on brightness change, need to adjust count because sometimes
-					// COLOR_PICKER_BRIGHTNESS_LEVELS does not divide evently into 256
+					// COLOR_PICKER_BRIGHTNESS_LEVELS does not divide evenly into 256
 					if (blade.dmode_step < COLOR_PICKER_COLOR_COUNT) {
 						blade.dmode_step += 256 - (COLOR_PICKER_COLOR_COUNT * COLOR_PICKER_BRIGHTNESS_LEVELS);
 					}
@@ -337,23 +340,41 @@ void dmode_handler(void) {
 				// this prevents color-stepping during ignition and extinguish
 				if ((blade.state & 0xF0) == BLADE_STATE_ON) {
 
-					// blade.dmode_step = (blade.dmode_step & 0xC0) + ((blade.dmode_step + (1 << (2 - (blade.dsubmode % 3)))) % 64);		// 16, 32, 64 color resolution
-					blade.dmode_step += (1 << (blade.dsubmode % 3));
+					// calculate the size of the increment to the next color value
+					dcp_step = COLOR_PICKER_MAX_STEP - (blade.dsubmode % COLOR_PICKER_MAX_STEP) - 1;
+
+					// increment to the next step of the color wheel
+					blade.dmode_step += dcp_step;
+
+					// calculate which color the wheel formula is on
+					dcp_color_value = (blade.dmode_step % COLOR_PICKER_COLOR_COUNT);
+
+					// calculate the internal wheel value used to determine which formula is used
+					if ( dcp_color_value < (COLOR_PICKER_COLOR_COUNT - dcp_step)) {
+						dcp_formula_value = dcp_color_value % (COLOR_PICKER_COLOR_COUNT / 3);
+					} else {
+						dcp_formula_value = dcp_color_value % COLOR_PICKER_COLOR_COUNT;
+					}
+
+					// i feel like if dcp_formula_value > some percentage of dcp_step, like 0.25 or 0.5
+					//
+					// or perhaps calculating rollover is only necessary at 0 ??nah.
+
+					// adjust step formula_value calculates to 0 if the previous calculations have it
+					// at a value just above 0
+					//if ((dcp_formula_value < dcp_step) && (dcp_formula_value > (dcp_step/2))) {
+					if ((dcp_formula_value > 0) && (dcp_formula_value < dcp_step)) {
+						blade.dmode_step -= dcp_formula_value;
+					}
 
 					// did we rollover on brightness?
-					if ((blade.dmode_step % COLOR_PICKER_COLOR_COUNT) < (1 << (blade.dsubmode % 3))) {
-
-						/*						
-						#ifdef DEBUG_SERIAL_ENABLED
-						snprintf(serial_buf, SERIAL_BUF_LEN, "Rollover Detected! : (%d mod %d) < %d", blade.dmode, COLOR_PICKER_COLOR_COUNT, (1 << (blade.dsubmode % 3)));
-						serial_sendString(serial_buf);
-						#endif
-						*/
+					if ((blade.dmode_step % COLOR_PICKER_COLOR_COUNT) < dcp_step) {
 
 						// then reduce by 1 brightness level
 						blade.dmode_step -= COLOR_PICKER_COLOR_COUNT; 
 					}
 				}
+
 				set_color_by_wheel_with_brightness(blade.dmode_step, COLOR_PICKER_BRIGHTNESS_LEVELS);
 				next_step_time = millis() + 2000;
 				break;
