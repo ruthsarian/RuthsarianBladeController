@@ -334,6 +334,7 @@ void dmode_handler(void) {
 				}
 				break;
 
+			// step the blade through the color wheel
 			case DMODE_COLOR_PICKER:
 
 				// only step to next color if blade is in an on state.
@@ -346,31 +347,41 @@ void dmode_handler(void) {
 					// increment to the next step of the color wheel
 					blade.dmode_step += dcp_step;
 
-					// calculate which color the wheel formula is on
-					dcp_color_value = (blade.dmode_step % COLOR_PICKER_COLOR_COUNT);
+					// if the step is more than one, we may need to adjust dmode_step
+					if (dcp_step > 1) {
 
-					// calculate the internal wheel value used to determine which formula is used
-					if ( dcp_color_value < (COLOR_PICKER_COLOR_COUNT - dcp_step)) {
-						dcp_formula_value = dcp_color_value % (COLOR_PICKER_COLOR_COUNT / 3);
-					} else {
-						dcp_formula_value = dcp_color_value % COLOR_PICKER_COLOR_COUNT;
-					}
+						// calculate which color the wheel formula is on
+						dcp_color_value = (blade.dmode_step % COLOR_PICKER_COLOR_COUNT);
 
-					// i feel like if dcp_formula_value > some percentage of dcp_step, like 0.25 or 0.5
-					//
-					// or perhaps calculating rollover is only necessary at 0 ??nah.
+						// color wheel has 3 formulas. each formula covers (COLOR_PICKER_COLOR_COUNT / 3) colors
+						// need to limit the number of steps within each formula for a consistent user experience
+						// so need to check for instances where dcp_color_value is >= 3 * the number of colors per step
+						// and readjust dmode_step accordingly 
+						//
+						// you would think the 3's cancel out, but we're doing some implicit rounding-down
+						// with conversion from float (result of division) to int, which means we can't cancel the 3's
+						if (dcp_color_value >= (3 * (COLOR_PICKER_COLOR_COUNT / 3))) {
 
-					// adjust step formula_value calculates to 0 if the previous calculations have it
-					// at a value just above 0
-					//if ((dcp_formula_value < dcp_step) && (dcp_formula_value > (dcp_step/2))) {
-					if ((dcp_formula_value > 0) && (dcp_formula_value < dcp_step)) {
-						blade.dmode_step -= dcp_formula_value;
+							// push dmode_step over to restart the color wheel
+							blade.dmode_step += (COLOR_PICKER_COLOR_COUNT - dcp_color_value);
+						} else {
+
+							// calculate where we are within the current wheel formula (there are 3 formulas)
+							dcp_formula_value = dcp_color_value % (COLOR_PICKER_COLOR_COUNT / 3);
+
+							// if we're less than step value, then we've just incremented into the next color wheel formula
+							// adjust dmode_step back so we land on a 0 color value for the next color wheel formula
+							// doing this guarantees we always get a full red, green, and blue color on the blade
+							if ((dcp_formula_value > 0) && (dcp_formula_value < dcp_step)) {
+								blade.dmode_step -= dcp_formula_value;
+							}
+						}
 					}
 
 					// did we rollover on brightness?
 					if ((blade.dmode_step % COLOR_PICKER_COLOR_COUNT) < dcp_step) {
 
-						// then reduce by 1 brightness level
+						// then reduce by 1 brightness level so we maintain the same brightness
 						blade.dmode_step -= COLOR_PICKER_COLOR_COUNT; 
 					}
 				}

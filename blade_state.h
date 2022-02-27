@@ -82,7 +82,7 @@
 #define DSUBMODE_THRESHOLD_TIME			3000	// remain powered off for less than this value in milliseconds, but more than DSUBMODE_THRESHOLD_TIME, to increment display sub-mode (DSUBMODE)
 
 // color picker related variables
-#define COLOR_PICKER_BRIGHTNESS_LEVELS	5
+#define COLOR_PICKER_BRIGHTNESS_LEVELS	4
 #define COLOR_PICKER_COLOR_COUNT		(uint8_t)(256 / COLOR_PICKER_BRIGHTNESS_LEVELS)
 #define COLOR_PICKER_MIDDLE_LEVEL		(uint8_t)((COLOR_PICKER_BRIGHTNESS_LEVELS - 1) / 2)
 #define COLOR_PICKER_MAX_STEP			(uint8_t)(COLOR_PICKER_COLOR_COUNT / 8)
