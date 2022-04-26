@@ -181,15 +181,15 @@ BOM as necessary.
 |        **Q1 - Q4** | PNP, SOT23 package, PINS: 1-B, 2-E, 3-C |
 |                    | [MMSS8550](https://www.mouser.com/ProductDetail/833-MMSS8550-L-TP), [ZXTP2041FTA](https://www.mouser.com/ProductDetail/621-ZXTP2041FTA), [PMMT591A](https://www.mouser.com/ProductDetail/771-PMMT591AT%2FR) |
 |        **Q5 - Q7** | Nch MOSFET, SOT23 package, >=1A, PINS: 1-G, 2-S, 3-D |
-|                    | [BSH105](https://www.mouser.com/ProductDetail/771-BSH105215) |
+|                    | [NXV55UNR](https://www.mouser.com/ProductDetail/771-NXV55UNR), [BSH105](https://www.mouser.com/ProductDetail/771-BSH105215) |
 |        **C1, C7**  | 330uf electrolytic, 2.5mm lead spacing, >=6.3V |
-|                    | [6.3ZLG330MEFC6.3X11](https://www.mouser.com/ProductDetail/232-63ZLG330MEFC63X1) |
+|                    | [10ZLH330MEFC6.3X11](https://www.mouser.com/ProductDetail/232-10ZLH330MEFC63X1) |
 | **C2, C3, C5, C6** | 1uf ceramic, 0402 package, >=6.3V |
 |                    | [GRM155R61C105KA12D](https://www.mouser.com/ProductDetail/81-GRM155R61C105KA2D) |
 |             **C4** | 0.1uf ceramic, 0402 package, >=6.3V |
 |                    | [GCM155L8EH104KE07D](https://www.mouser.com/ProductDetail/81-GCM155L8EH104KE7D) |
 |        **R1 - R7** | 1kOhm, 0402 package |
-|                    | [CR0402-FX-1001GLF](https://www.mouser.com/ProductDetail/652-CR0402FX-1001GLF) |
+|                    | [CR0402-JW-102GLF](https://www.mouser.com/ProductDetail/652-CR0402JW-102GLF) |
 |             **R8** | 10kOhm, 0402 package |
 |                    | [CR0402-JW-103GLF](https://www.mouser.com/ProductDetail/652-CR0402-JW-103GLF) |
 
