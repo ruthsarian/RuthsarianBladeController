@@ -65,26 +65,26 @@ uint8_t stock_blade_color_table_lookup[STOCK_BLADE_COLOR_TABLES][STOCK_BLADE_COL
 		STOCK_BLADE_COLOR_FLASH_ORANGE,	// red
 		STOCK_BLADE_COLOR_FLASH_WHITE,	// orange
 		STOCK_BLADE_COLOR_FLASH_WHITE,	// yellow
-		STOCK_BLADE_COLOR_FLASH_YELLOW,	// green
-		STOCK_BLADE_COLOR_FLASH_WHITE,	// cyan
-		STOCK_BLADE_COLOR_FLASH_WHITE,	// blue
-		STOCK_BLADE_COLOR_FLASH_WHITE,	// purple
+		STOCK_BLADE_COLOR_FLASH_YELLOW,	// green, Ahsoka (CW)
+		STOCK_BLADE_COLOR_FLASH_YELLOW,	// cyan
+		STOCK_BLADE_COLOR_FLASH_YELLOW,	// blue
+		STOCK_BLADE_COLOR_FLASH_YELLOW,	// purple
 		STOCK_BLADE_COLOR_FLASH_ORANGE,	// dark purple
-		STOCK_BLADE_COLOR_FLASH_YELLOW,	// red
-		STOCK_BLADE_COLOR_FLASH_WHITE,	// orange
+		STOCK_BLADE_COLOR_FLASH_ORANGE,	// red
+		STOCK_BLADE_COLOR_FLASH_ORANGE,	// orange
 		STOCK_BLADE_COLOR_FLASH_WHITE,	// yellow
 		STOCK_BLADE_COLOR_FLASH_YELLOW,	// green
-		STOCK_BLADE_COLOR_FLASH_WHITE,	// cyan
-		STOCK_BLADE_COLOR_FLASH_WHITE,	// blue
-		STOCK_BLADE_COLOR_FLASH_WHITE	// purple
+		STOCK_BLADE_COLOR_FLASH_ORANGE,	// cyan
+		STOCK_BLADE_COLOR_FLASH_YELLOW,	// blue
+		STOCK_BLADE_COLOR_FLASH_YELLOW	// purple
 	},
 	{	// Legacy Lightsabers Colors
 		STOCK_BLADE_COLOR_YELLOW,		// 0 Temple Guard
 		STOCK_BLADE_COLOR_RED,			// 1 Kylo Ren
-		STOCK_BLADE_COLOR_BLUE,			// 2 Rey, Rey Reforged
+		STOCK_BLADE_COLOR_BLUE,			// 2 Rey/Anakin, Rey/Anakin Reforged, Ahsoka (CW)
 		STOCK_BLADE_COLOR_PURPLE,		// 3 Mace
 		STOCK_BLADE_COLOR_RED,			// 4 Ventress
-		STOCK_BLADE_COLOR_WHITE,		// 5 Ahsoka
+		STOCK_BLADE_COLOR_WHITE,		// 5 Ahsoka (Rebels)
 		STOCK_BLADE_COLOR_GREEN,		// 6 Luke
 		STOCK_BLADE_COLOR_RED,			// 7 Vader; long fade out of segment 4
 		STOCK_BLADE_COLOR_RED,			// 8 Maul
@@ -98,15 +98,15 @@ uint8_t stock_blade_color_table_lookup[STOCK_BLADE_COLOR_TABLES][STOCK_BLADE_COL
 	},
 	{	// Legacy Lightsabers CLASH Colors
 		STOCK_BLADE_COLOR_FLASH_WHITE,	// yellow
-		STOCK_BLADE_COLOR_FLASH_YELLOW,	// red
-		STOCK_BLADE_COLOR_FLASH_WHITE,	// blue
-		STOCK_BLADE_COLOR_FLASH_WHITE,	// purple
-		STOCK_BLADE_COLOR_FLASH_WHITE,	// red
+		STOCK_BLADE_COLOR_FLASH_ORANGE,	// red
+		STOCK_BLADE_COLOR_FLASH_YELLOW,	// blue
+		STOCK_BLADE_COLOR_FLASH_YELLOW,	// purple
+		STOCK_BLADE_COLOR_FLASH_ORANGE,	// red
 		STOCK_BLADE_COLOR_FLASH_YELLOW,	// white
 		STOCK_BLADE_COLOR_FLASH_YELLOW,	// green
-		STOCK_BLADE_COLOR_FLASH_YELLOW,	// red
-		STOCK_BLADE_COLOR_FLASH_YELLOW,	// red
-		STOCK_BLADE_COLOR_FLASH_WHITE,	// blue
+		STOCK_BLADE_COLOR_FLASH_ORANGE,	// red
+		STOCK_BLADE_COLOR_FLASH_ORANGE,	// red
+		STOCK_BLADE_COLOR_FLASH_YELLOW,	// blue
 		STOCK_BLADE_COLOR_FLASH_YELLOW,	// white
 		STOCK_BLADE_COLOR_FLASH_YELLOW,	// white
 		STOCK_BLADE_COLOR_FLASH_YELLOW,	// white
@@ -199,11 +199,11 @@ void set_segment_color_by_wheel_with_brightness(uint8_t segment, uint8_t wheel_v
 
 	uint8_t red, green, blue, color, brightness, formula_separator, color_count, middle_brightness_level;
 
-	// constrain brightness_levels to a value from 1 to 32
+	// constrain brightness_levels to a value from 1 to 16
 	if (brightness_levels == 0) {
 		brightness_levels = 1;
-	} else if (brightness_levels > 32) {
-		brightness_levels = 32;
+	} else if (brightness_levels > 16) {
+		brightness_levels = 16;
 	}
 
 	// calculate many colors there are given the number of brightness levels
@@ -242,15 +242,27 @@ void set_segment_color_by_wheel_with_brightness(uint8_t segment, uint8_t wheel_v
 
 	// brighten the color if brightness > middle_brightness_level
 	if (brightness > middle_brightness_level) {
-		red   -= (uint8_t)((red   - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][RED_IDX]) * ((float)(brightness - middle_brightness_level)/(brightness_levels - middle_brightness_level - 1)));
-		green -= (uint8_t)((green - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][GRN_IDX]) * ((float)(brightness - middle_brightness_level)/(brightness_levels - middle_brightness_level - 1)));
-		blue  -= (uint8_t)((blue  - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][BLU_IDX]) * ((float)(brightness - middle_brightness_level)/(brightness_levels - middle_brightness_level - 1)));
+
+// alternative formulas
+//		red   -= (uint8_t)((red   - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][GRN_IDX]) * ((float)(brightness - middle_brightness_level)/(brightness_levels - middle_brightness_level - 1)));
+//		red   -= (uint8_t)((red   - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][RED_IDX]) * ((float)(brightness - middle_brightness_level)/(brightness_levels - middle_brightness_level - 1)) * (1 - ((float)1 / (middle_brightness_level + 1))));
+
+		red   -= (uint8_t)((red   - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][RED_IDX]) * ((float)(brightness - middle_brightness_level)/(brightness_levels - middle_brightness_level - 1)) * ((float)brightness / (brightness_levels - 1)));
+		green -= (uint8_t)((green - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][GRN_IDX]) * ((float)(brightness - middle_brightness_level)/(brightness_levels - middle_brightness_level - 1)) * ((float)brightness / (brightness_levels - 1)));
+		blue  -= (uint8_t)((blue  - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][BLU_IDX]) * ((float)(brightness - middle_brightness_level)/(brightness_levels - middle_brightness_level - 1)) * ((float)brightness / (brightness_levels - 1)));
 
 	// darken the color if brightness < middle_brightness_level
 	} else if (brightness < middle_brightness_level) {
-		red   >>= (middle_brightness_level - brightness);
-		green >>= (middle_brightness_level - brightness);
-		blue  >>= (middle_brightness_level - brightness);
+
+// alternative formulas
+//		red   >>= (middle_brightness_level - brightness);
+//		red   = (uint8_t)(((float)red / 255) * (192 >> (middle_brightness_level - brightness)));
+//		red   = (uint8_t)(((float)red / 0xFF) * (0xFF >> (middle_brightness_level - brightness)));
+//		red   = (uint8_t)((float)(red * (brightness + 1)) / (middle_brightness_level + 1));
+
+		red   = (uint8_t)(((float)(red   * (brightness + 1)) / (middle_brightness_level + 1)) * (1 - ((float)1 / (middle_brightness_level + 1))));
+		green = (uint8_t)(((float)(green * (brightness + 1)) / (middle_brightness_level + 1)) * (1 - ((float)1 / (middle_brightness_level + 1))));
+		blue  = (uint8_t)(((float)(blue  * (brightness + 1)) / (middle_brightness_level + 1)) * (1 - ((float)1 / (middle_brightness_level + 1))));
 	}
 
 	set_custom_segment_color(segment, red, green, blue);
@@ -277,73 +289,6 @@ void set_color_by_wheel_with_brightness(uint8_t color, uint8_t brightness_levels
 	}
 }
 
-void set_segment_color_by_wheel_64(uint8_t segment, uint8_t wheel_value) {
-
-	uint8_t r,g,b,v,brightness;
-
-	// calculate brightness level	
-	brightness = wheel_value >> 6;
-
-	// grab the color value
-	v = wheel_value & 0x3F;
-
-	// special case where max brightness is always white
-	if (brightness == 3) {
-		r = stock_blade_colors[STOCK_BLADE_COLOR_WHITE][RED_IDX];
-		g = stock_blade_colors[STOCK_BLADE_COLOR_WHITE][GRN_IDX];
-		b = stock_blade_colors[STOCK_BLADE_COLOR_WHITE][BLU_IDX];
-
-	} else {
-
-		// calculate red, green, and blue values
-		if (v < 21) {
-			g = (v * 12) + (v > 0 ? 3 : 0);
-			r = ~g;
-			b = 0;
-		} else if (v < 42) {
-			v -= 21;
-			b = (v * 12) + (v > 0 ? 3 : 0);
-			g = ~b;
-			r = 0;
-		} else {
-			v -= 42;
-			r = (v * 12) + (v > 0 ? 3 : 0);
-			b = ~r;
-			g = 0;
-		}
-
-		// adjust calculated color values based on brightness level
-		switch(brightness) {
-			case 0:
-				r >>= 1;
-				g >>= 1;
-				b >>= 1;
-				break;
-			case 2:
-				r -= ((r - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][RED_IDX]) * .33); // >> 1);
-				g -= ((g - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][GRN_IDX]) * .33); // >> 1);
-				b -= ((b - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][BLU_IDX]) * .33); // >> 1);
-				break;
-		}
-	}
-
-	set_custom_segment_color(segment, r, g, b);
-
-	#ifdef DEBUG_SERIAL_ENABLED
-	if (segment == 0) {
-		snprintf(serial_buf, SERIAL_BUF_LEN, "COL64: %d (%d,%d) = %03d, %03d, %03d\r\n", wheel_value, v, brightness, r, g, b);
-		serial_sendString(serial_buf);
-	}
-	#endif
-}
-
-void set_color_by_wheel_64(uint8_t color) {
-	uint8_t i;
-	for (i=0;i<3;i++) {
-		set_segment_color_by_wheel_64(i, color);
-	}
-}
-
 void set_segment_color_by_wheel(uint8_t segment, uint8_t wheel_value) {
 	if (wheel_value < 85 ) {
 		set_custom_segment_color(segment, ~(wheel_value * 3), (wheel_value * 3), 0);
@@ -358,8 +303,15 @@ void set_segment_color_by_wheel(uint8_t segment, uint8_t wheel_value) {
 
 void set_color_by_wheel(uint8_t color) {
 	uint8_t i;
-	for (i=0;i<3;i++) {
-		set_segment_color_by_wheel(i, color);
+
+	// calculate color for first segment
+	set_segment_color_by_wheel(0, color);
+
+	// copy values from first segment to other 3 segments
+	for (i=1;i<3;i++) {
+		segment_color[i][RED_IDX] = segment_color[0][RED_IDX];
+		segment_color[i][GRN_IDX] = segment_color[0][GRN_IDX];
+		segment_color[i][BLU_IDX] = segment_color[0][BLU_IDX];
 	}
 }
 

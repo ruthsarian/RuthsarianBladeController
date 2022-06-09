@@ -171,16 +171,11 @@ void set_segment_color_by_wheel(uint8_t segment, uint8_t wheel_value);
 // set the blade's color based on a single byte value
 void set_color_by_wheel(uint8_t color);
 
-//
-void set_segment_color_by_wheel_64(uint8_t segment, uint8_t wheel_value);
-
-//
-void set_color_by_wheel_64(uint8_t color);
-
-//
+// similar to set_segment_color_by_wheel with the extra feature of
+// generating not just color, but levels of brightness as well 
 void set_segment_color_by_wheel_with_brightness(uint8_t segment, uint8_t wheel_value, uint8_t brightness_levels);
 
-//
+// similar to set_color_by_wheel except it uses the brightness version
 void set_color_by_wheel_with_brightness(uint8_t color, uint8_t brightness_levels);
 
 // set the blade color using the stock color lookup tables and the value stored 
@@ -214,7 +209,7 @@ void mem_segment_brightness(uint8_t operation);
 // operation != 0: restore current blade state
 void mem_blade(uint8_t operation);
 
-//
+// dump the segment brightness array to serial
 void dump_segment_brightness(void);
 	
 // dump the contents of blade struct to serial

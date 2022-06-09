@@ -50,15 +50,6 @@ struct data_cbuf_struct {
 	uint32_t state_time;      // time the state was recorded
 };
 
-// GLOBAL: data_cbuf_struct - circle buffer used to store bits as the are received from the hilt
-volatile struct data_cbuf_struct cbuf[DATA_CBUF_LEN];
-
-// GLOBAL: data_cbuf_rpos - the read position of the circle buffer
-volatile uint8_t data_cbuf_rpos;
-
-// GLOBAL: data_cbuf_wpos - the write position of the circle buffer
-volatile uint8_t data_cbuf_wpos;
-
 // setup the DATA pin for reception of commands from the hilt
 void data_setup(void);
 

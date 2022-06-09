@@ -341,8 +341,19 @@ void dmode_handler(void) {
 				// this prevents color-stepping during ignition and extinguish
 				if ((blade.state & 0xF0) == BLADE_STATE_ON) {
 
+
+
+// (blade.dsubmode % COLOR_PICKER_MAX_STEP) was originally designed to represent the gap between steps
+//
+// but if we convert this into the number of colors we expect per formula step, and multiply by 3 or divide by 3 or something
+// then we have an easier way to develop dcp_step's proper value
+// such that each increment of blade.dsubmode provides more colors
+// wheras the current setup may have 3 colors per formula step several times in a row
+//
+
+
 					// calculate the size of the increment to the next color value
-					dcp_step = COLOR_PICKER_MAX_STEP - (blade.dsubmode % COLOR_PICKER_MAX_STEP) - 1;
+					dcp_step = COLOR_PICKER_MAX_STEP - (blade.dsubmode % COLOR_PICKER_MAX_STEP);
 
 					// increment to the next step of the color wheel
 					blade.dmode_step += dcp_step;
@@ -360,7 +371,9 @@ void dmode_handler(void) {
 						//
 						// you would think the 3's cancel out, but we're doing some implicit rounding-down
 						// with conversion from float (result of division) to int, which means we can't cancel the 3's
-						if (dcp_color_value >= (3 * (COLOR_PICKER_COLOR_COUNT / 3))) {
+						//
+						// and the 
+						if (dcp_color_value >= (3 * ((COLOR_PICKER_COLOR_COUNT / 3)) - (dcp_step / 2))) {
 
 							// push dmode_step over to restart the color wheel
 							blade.dmode_step += (COLOR_PICKER_COLOR_COUNT - dcp_color_value);
@@ -374,6 +387,10 @@ void dmode_handler(void) {
 							// doing this guarantees we always get a full red, green, and blue color on the blade
 							if ((dcp_formula_value > 0) && (dcp_formula_value < dcp_step)) {
 								blade.dmode_step -= dcp_formula_value;
+
+							// if we're too close to the next formula, step forward into it
+							} else if (dcp_formula_value > ((COLOR_PICKER_COLOR_COUNT / 3) - (dcp_step / 2))) {
+								blade.dmode_step += (COLOR_PICKER_COLOR_COUNT / 3) - dcp_formula_value;
 							}
 						}
 					}
