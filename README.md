@@ -51,7 +51,7 @@ and Microchip Studio are verified to work.
 - Project -\> Properties (ALT+F7) 
 	- -\> Toolchain -\> Configuration: All Configurations 
 	- -\> Toolchain -\> AVR/GNU C Compiler -\> Symbols -\> Defined Symbols, ADD: F_CPU=10000000UL
-	- -\> Build Events -\> Post-build event command line -\> "$(ToolchainDir)"\avr-objcopy.exe -O ihex -j .fuse --change-section-lma .fuse=0 "$(OutputFileName).elf" "$(OutputFileName)_fuses.hex"
+	- -\> Build Events -\> Post-build event command line -\> "<span>$</span>(ToolchainDir)"\avr-objcopy.exe -O ihex -j .fuse --change-section-lma .fuse=0 "<span>$</span>(OutputFileName).elf" "<span>$</span>(OutputFileName)\_fuses.hex"
 	- -\> Toolchain -\> AVR/GNU C Compiler -\> Miscellaneous -\> Other Flags -\> add "-flto"
 	- -\> Toolchain -\> AVR/GNU C Link -\> Miscellaneous -\> Other Flags -\> add "-mrelax"
 
@@ -76,10 +76,17 @@ used to program the ATtiny806/1606 microcontroller. The pinout of this header
 is described on the bottom of the PCB. While there are 6 pins in the header, 
 only 3 are needed to program the microcontroller: VCMU (power), UPDI, and GND.
 
+### POGO Pin Programming Adapter
 I use a 2x3, 1.27mm pitch pogo pin adapter to interface with that header. The
 [particular one I use](https://www.tindie.com/products/electronutlabs/pogoprog-model-d-pogo-pin-programmer-2-pack/)
 is not currently in stock, however alternatives may be found elsewhere. It's
 possible you could even [build your own](https://github.com/Pnoxi/AVR-ISP-Pogo-Pin-Adapter). 
+
+[I have designed this PCB](https://oshpark.com/shared_projects/SSv946nJ) as another alternative. 
+The board may be ordered through OSH Park or the gerber files may be downloaded via the ACTIONS 
+menu on the OSH Park project paeg and you can order it elsewhere. The project description on OSH Park
+includes what type of POGO pins and header pins you'll need to order (widely available on eBay or Amazon)
+as well as tips on how to assemble it.
 
 ## Firmware (Blade Controller) Operation
 The firmware provides the ability to apply different colors and animation 
