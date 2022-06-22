@@ -82,7 +82,7 @@ I use a 2x3, 1.27mm pitch pogo pin adapter to interface with that header. The
 is not currently in stock, however alternatives may be found elsewhere. It's
 possible you could even [build your own](https://github.com/Pnoxi/AVR-ISP-Pogo-Pin-Adapter). 
 
-[I have designed this PCB](https://oshpark.com/shared_projects/SSv946nJ) as another alternative. 
+[I have designed this PCB](https://oshpark.com/shared_projects/KFOWave7) as another alternative. 
 The board may be ordered through OSH Park or the gerber files may be downloaded via the ACTIONS 
 menu on the OSH Park project paeg and you can order it elsewhere. The project description on OSH Park
 includes what type of POGO pins and header pins you'll need to order (widely available on eBay or Amazon)
