@@ -51,7 +51,7 @@ and Microchip Studio are verified to work.
 - Project -\> Properties (ALT+F7) 
 	- -\> Toolchain -\> Configuration: All Configurations 
 	- -\> Toolchain -\> AVR/GNU C Compiler -\> Symbols -\> Defined Symbols, ADD: F_CPU=10000000UL
-	- -\> Build Events -\> Post-build event command line -\> "$(ToolchainDir)"\avr-objcopy.exe -O ihex -j .fuse --change-section-lma .fuse=0 "$(OutputFileName).elf" "$(OutputFileName)_fuses.hex"
+	- -\> Build Events -\> Post-build event command line -\> "<span>$</span>(ToolchainDir)"\avr-objcopy.exe -O ihex -j .fuse --change-section-lma .fuse=0 "<span>$</span>(OutputFileName).elf" "<span>$</span>(OutputFileName)\_fuses.hex"
 	- -\> Toolchain -\> AVR/GNU C Compiler -\> Miscellaneous -\> Other Flags -\> add "-flto"
 	- -\> Toolchain -\> AVR/GNU C Link -\> Miscellaneous -\> Other Flags -\> add "-mrelax"
 
@@ -76,10 +76,17 @@ used to program the ATtiny806/1606 microcontroller. The pinout of this header
 is described on the bottom of the PCB. While there are 6 pins in the header, 
 only 3 are needed to program the microcontroller: VCMU (power), UPDI, and GND.
 
+### POGO Pin Programming Adapter
 I use a 2x3, 1.27mm pitch pogo pin adapter to interface with that header. The
 [particular one I use](https://www.tindie.com/products/electronutlabs/pogoprog-model-d-pogo-pin-programmer-2-pack/)
 is not currently in stock, however alternatives may be found elsewhere. It's
 possible you could even [build your own](https://github.com/Pnoxi/AVR-ISP-Pogo-Pin-Adapter). 
+
+[I have designed this PCB](https://oshpark.com/shared_projects/KFOWave7) as another alternative. 
+The board may be ordered through OSH Park or the gerber files may be downloaded via the ACTIONS 
+menu on the OSH Park project paeg and you can order it elsewhere. The project description on OSH Park
+includes what type of POGO pins and header pins you'll need to order (widely available on eBay or Amazon)
+as well as tips on how to assemble it.
 
 ## Firmware (Blade Controller) Operation
 The firmware provides the ability to apply different colors and animation 
@@ -181,15 +188,15 @@ BOM as necessary.
 |        **Q1 - Q4** | PNP, SOT23 package, PINS: 1-B, 2-E, 3-C |
 |                    | [MMSS8550](https://www.mouser.com/ProductDetail/833-MMSS8550-L-TP), [ZXTP2041FTA](https://www.mouser.com/ProductDetail/621-ZXTP2041FTA), [PMMT591A](https://www.mouser.com/ProductDetail/771-PMMT591AT%2FR) |
 |        **Q5 - Q7** | Nch MOSFET, SOT23 package, >=1A, PINS: 1-G, 2-S, 3-D |
-|                    | [BSH105](https://www.mouser.com/ProductDetail/771-BSH105215) |
+|                    | [NXV55UNR](https://www.mouser.com/ProductDetail/771-NXV55UNR), [BSH105](https://www.mouser.com/ProductDetail/771-BSH105215) |
 |        **C1, C7**  | 330uf electrolytic, 2.5mm lead spacing, >=6.3V |
-|                    | [6.3ZLG330MEFC6.3X11](https://www.mouser.com/ProductDetail/232-63ZLG330MEFC63X1) |
+|                    | [10ZLH330MEFC6.3X11](https://www.mouser.com/ProductDetail/232-10ZLH330MEFC63X1) |
 | **C2, C3, C5, C6** | 1uf ceramic, 0402 package, >=6.3V |
 |                    | [GRM155R61C105KA12D](https://www.mouser.com/ProductDetail/81-GRM155R61C105KA2D) |
 |             **C4** | 0.1uf ceramic, 0402 package, >=6.3V |
 |                    | [GCM155L8EH104KE07D](https://www.mouser.com/ProductDetail/81-GCM155L8EH104KE7D) |
 |        **R1 - R7** | 1kOhm, 0402 package |
-|                    | [CR0402-FX-1001GLF](https://www.mouser.com/ProductDetail/652-CR0402FX-1001GLF) |
+|                    | [CR0402-JW-102GLF](https://www.mouser.com/ProductDetail/652-CR0402JW-102GLF) |
 |             **R8** | 10kOhm, 0402 package |
 |                    | [CR0402-JW-103GLF](https://www.mouser.com/ProductDetail/652-CR0402-JW-103GLF) |
 
