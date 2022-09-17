@@ -82,10 +82,14 @@
 #define DSUBMODE_THRESHOLD_TIME			3000	// remain powered off for less than this value in milliseconds, but more than DSUBMODE_THRESHOLD_TIME, to increment display sub-mode (DSUBMODE)
 
 // color picker related variables
-#define COLOR_PICKER_BRIGHTNESS_LEVELS	4
-#define COLOR_PICKER_COLOR_COUNT		(uint8_t)(256 / COLOR_PICKER_BRIGHTNESS_LEVELS)
-#define COLOR_PICKER_MIDDLE_LEVEL		(uint8_t)((COLOR_PICKER_BRIGHTNESS_LEVELS - 1) / 2)
-#define COLOR_PICKER_MAX_STEP			(uint8_t)(COLOR_PICKER_COLOR_COUNT / 8)
+#define COLOR_PICKER_BRIGHTNESS_LEVELS	4														// recommend this stay below 8
+																								// currently set to 4 so 3 levels of brightness and the 4th is all-white
+																								// should probably think about adding a special case where 255 = white so i can free-up color space
+																								//
+#define COLOR_PICKER_COLOR_COUNT		(uint8_t)(256 / COLOR_PICKER_BRIGHTNESS_LEVELS)			// the size of the color value space per brightness level
+#define COLOR_PICKER_FORMULA_SEPARATOR	(uint8_t)(COLOR_PICKER_COLOR_COUNT / 3)					// the point at which different color formulas (red, green, blue) come into play
+#define COLOR_PICKER_MIDDLE_LEVEL		(uint8_t)((COLOR_PICKER_BRIGHTNESS_LEVELS - 1) / 2)		// identify the brightness level that represents the 'middle' or 'normal' level of brightness
+#define COLOR_PICKER_MAX_STEP			(uint8_t)(COLOR_PICKER_COLOR_COUNT / 8)					// set an upper limit on the size of step take through the color space
 
 // MEM Operation
 #define MEM_BLADE_BACKUP				0
@@ -172,11 +176,11 @@ void set_segment_color_by_wheel(uint8_t segment, uint8_t wheel_value);
 void set_color_by_wheel(uint8_t color);
 
 // similar to set_segment_color_by_wheel with the extra feature of
-// generating not just color, but levels of brightness as well 
-void set_segment_color_by_wheel_with_brightness(uint8_t segment, uint8_t wheel_value, uint8_t brightness_levels);
+// generating not just color, but levels of brightness based on BRIGHTNESS_LEVELS
+void set_segment_color_by_wheel_with_brightness(uint8_t segment, uint8_t wheel_value);
 
-// similar to set_color_by_wheel except it uses the brightness version
-void set_color_by_wheel_with_brightness(uint8_t color, uint8_t brightness_levels);
+// similar to set_color_by_wheel except it takes BRIGHTNESS_LEVELS into consideration
+void set_color_by_wheel_with_brightness(uint8_t colorls);
 
 // set the blade color using the stock color lookup tables and the value stored 
 // in the global blade_state variable

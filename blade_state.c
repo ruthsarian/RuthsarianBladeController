@@ -195,91 +195,74 @@ void rotate_segment_color(uint8_t direction) {
 	}
 }
 
-void set_segment_color_by_wheel_with_brightness(uint8_t segment, uint8_t wheel_value, uint8_t brightness_levels) {
+void set_segment_color_by_wheel_with_brightness(uint8_t segment, uint8_t wheel_value) {
 
-	uint8_t red, green, blue, color, brightness, formula_separator, color_count, middle_brightness_level;
-
-	// constrain brightness_levels to a value from 1 to 16
-	if (brightness_levels == 0) {
-		brightness_levels = 1;
-	} else if (brightness_levels > 16) {
-		brightness_levels = 16;
-	}
-
-	// calculate many colors there are given the number of brightness levels
-	color_count = (uint8_t)(256 / brightness_levels);
-
-	// calculate value at which the 3 color formulas are separated
-	formula_separator = (uint8_t)(color_count / 3);
-
-	// calculate the brightness level at which the normal color will appear
-	// brightness levels below this will be darkened, levels above will be brightened
-	middle_brightness_level = (uint8_t)((brightness_levels - 1) / 2);
+	uint8_t red, green, blue, color, brightness;
 
 	// separate color and brightness values from the supplied wheel value
-	color = wheel_value % color_count;
-	brightness = (uint8_t)(wheel_value / color_count);
+	color = wheel_value % COLOR_PICKER_COLOR_COUNT;
+	brightness = (uint8_t)(wheel_value / COLOR_PICKER_COLOR_COUNT);
 
 	// calculate the red, green, and blue components of the color based on color value.
 	//
 	// this formula is based on the wheel() function found here:
 	// https://learn.adafruit.com/multi-tasking-the-arduino-part-3/utility-functions
-	if (color < formula_separator) {
-		green = color * 3 * brightness_levels;
+	if (color < COLOR_PICKER_FORMULA_SEPARATOR) {
+		green = color * 3 * COLOR_PICKER_BRIGHTNESS_LEVELS;
 		red = ~green;
 		blue = 0;
-	} else if (color < (2 * formula_separator)) {
-		color -= formula_separator;
-		blue = color * 3 * brightness_levels;
+	} else if (color < (2 * COLOR_PICKER_FORMULA_SEPARATOR)) {
+		color -= COLOR_PICKER_FORMULA_SEPARATOR;
+		blue = color * 3 * COLOR_PICKER_BRIGHTNESS_LEVELS;
 		green = ~blue;
 		red = 0;
 	} else {
-		color -= (2 * formula_separator);
-		red = color * 3 * brightness_levels;
+		color -= (2 * COLOR_PICKER_FORMULA_SEPARATOR);
+		red = color * 3 * COLOR_PICKER_BRIGHTNESS_LEVELS;
 		blue = ~red;
 		green = 0;
 	}
 
 	// brighten the color if brightness > middle_brightness_level
-	if (brightness > middle_brightness_level) {
+	if (brightness > COLOR_PICKER_MIDDLE_LEVEL) {
 
 // alternative formulas
-//		red   -= (uint8_t)((red   - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][GRN_IDX]) * ((float)(brightness - middle_brightness_level)/(brightness_levels - middle_brightness_level - 1)));
-//		red   -= (uint8_t)((red   - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][RED_IDX]) * ((float)(brightness - middle_brightness_level)/(brightness_levels - middle_brightness_level - 1)) * (1 - ((float)1 / (middle_brightness_level + 1))));
+//		red   -= (uint8_t)((red   - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][RED_IDX]) * ((float)(brightness - COLOR_PICKER_MIDDLE_LEVEL)/(COLOR_PICKER_BRIGHTNESS_LEVELS - middle_brightness_level - 1)));
+//		red   -= (uint8_t)((red   - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][RED_IDX]) * ((float)(brightness - COLOR_PICKER_MIDDLE_LEVEL)/(COLOR_PICKER_BRIGHTNESS_LEVELS - middle_brightness_level - 1)) * (1 - ((float)1 / (middle_brightness_level + 1))));
 
-		red   -= (uint8_t)((red   - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][RED_IDX]) * ((float)(brightness - middle_brightness_level)/(brightness_levels - middle_brightness_level - 1)) * ((float)brightness / (brightness_levels - 1)));
-		green -= (uint8_t)((green - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][GRN_IDX]) * ((float)(brightness - middle_brightness_level)/(brightness_levels - middle_brightness_level - 1)) * ((float)brightness / (brightness_levels - 1)));
-		blue  -= (uint8_t)((blue  - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][BLU_IDX]) * ((float)(brightness - middle_brightness_level)/(brightness_levels - middle_brightness_level - 1)) * ((float)brightness / (brightness_levels - 1)));
+		red   -= (uint8_t)((red   - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][RED_IDX]) * ((float)(brightness - COLOR_PICKER_MIDDLE_LEVEL)/(COLOR_PICKER_BRIGHTNESS_LEVELS - COLOR_PICKER_MIDDLE_LEVEL - 1)) * ((float)brightness / (COLOR_PICKER_BRIGHTNESS_LEVELS - 1)));
+		green -= (uint8_t)((green - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][GRN_IDX]) * ((float)(brightness - COLOR_PICKER_MIDDLE_LEVEL)/(COLOR_PICKER_BRIGHTNESS_LEVELS - COLOR_PICKER_MIDDLE_LEVEL - 1)) * ((float)brightness / (COLOR_PICKER_BRIGHTNESS_LEVELS - 1)));
+		blue  -= (uint8_t)((blue  - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][BLU_IDX]) * ((float)(brightness - COLOR_PICKER_MIDDLE_LEVEL)/(COLOR_PICKER_BRIGHTNESS_LEVELS - COLOR_PICKER_MIDDLE_LEVEL - 1)) * ((float)brightness / (COLOR_PICKER_BRIGHTNESS_LEVELS - 1)));
 
 	// darken the color if brightness < middle_brightness_level
-	} else if (brightness < middle_brightness_level) {
+	} else if (brightness < COLOR_PICKER_MIDDLE_LEVEL) {
 
 // alternative formulas
 //		red   >>= (middle_brightness_level - brightness);
-//		red   = (uint8_t)(((float)red / 255) * (192 >> (middle_brightness_level - brightness)));
-//		red   = (uint8_t)(((float)red / 0xFF) * (0xFF >> (middle_brightness_level - brightness)));
-//		red   = (uint8_t)((float)(red * (brightness + 1)) / (middle_brightness_level + 1));
+//		red   = (uint8_t)(((float)red / 255) * (192 >> (COLOR_PICKER_MIDDLE_LEVEL - brightness)));
+//		red   = (uint8_t)(((float)red / 0xFF) * (0xFF >> (COLOR_PICKER_MIDDLE_LEVEL - brightness)));
+//		red   = (uint8_t)((float)(red * (brightness + 1)) / (COLOR_PICKER_MIDDLE_LEVEL + 1));
 
-		red   = (uint8_t)(((float)(red   * (brightness + 1)) / (middle_brightness_level + 1)) * (1 - ((float)1 / (middle_brightness_level + 1))));
-		green = (uint8_t)(((float)(green * (brightness + 1)) / (middle_brightness_level + 1)) * (1 - ((float)1 / (middle_brightness_level + 1))));
-		blue  = (uint8_t)(((float)(blue  * (brightness + 1)) / (middle_brightness_level + 1)) * (1 - ((float)1 / (middle_brightness_level + 1))));
+		red   = (uint8_t)(((float)(red   * (brightness + 1)) / (COLOR_PICKER_MIDDLE_LEVEL + 1)) * (1 - ((float)1 / (COLOR_PICKER_MIDDLE_LEVEL + 1))));
+		green = (uint8_t)(((float)(green * (brightness + 1)) / (COLOR_PICKER_MIDDLE_LEVEL + 1)) * (1 - ((float)1 / (COLOR_PICKER_MIDDLE_LEVEL + 1))));
+		blue  = (uint8_t)(((float)(blue  * (brightness + 1)) / (COLOR_PICKER_MIDDLE_LEVEL + 1)) * (1 - ((float)1 / (COLOR_PICKER_MIDDLE_LEVEL + 1))));
 	}
 
 	set_custom_segment_color(segment, red, green, blue);
 
 	#ifdef DEBUG_SERIAL_ENABLED
 	if (segment == 0) {
-		snprintf(serial_buf, SERIAL_BUF_LEN, "BRITE: %d (%d,%d) = %03d, %03d, %03d; %d - %d\r\n", wheel_value, color, brightness, red, green, blue, brightness_levels, middle_brightness_level);
+		snprintf(serial_buf, SERIAL_BUF_LEN, "BRITE: %d (%d,%d) = %03d, %03d, %03d; %d - %d\r\n", wheel_value, color, brightness, red, green, blue, COLOR_PICKER_BRIGHTNESS_LEVELS, COLOR_PICKER_MIDDLE_LEVEL);
 		serial_sendString(serial_buf);
 	}
 	#endif
 }
 
-void set_color_by_wheel_with_brightness(uint8_t color, uint8_t brightness_levels) {
+void set_color_by_wheel_with_brightness(uint8_t color) {
 	uint8_t i;
 
 	// calculate color for first segment
-	set_segment_color_by_wheel_with_brightness(0, color, brightness_levels);
+	set_segment_color_by_wheel_with_brightness(0, color);
 	
 	// copy values from first segment to other 3 segments
 	for (i=1;i<3;i++) {
