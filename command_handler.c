@@ -78,8 +78,7 @@ void command_handler(void) {
 						if (reset_count > 1) {
 							reset_count--;
 							#ifdef DEBUG_SERIAL_ENABLED
-								serial_sendString("Decremented reset_count to ");
-								snprintf(serial_buf, SERIAL_BUF_LEN, "%d\r\n", reset_count);		// EEPROM_SIZE is in BYTES
+								snprintf(serial_buf, SERIAL_BUF_LEN, "Decremented reset_count to  %02d\r\n", reset_count);		// EEPROM_SIZE is in BYTES
 								serial_sendString(serial_buf);
 							#endif
 						}
@@ -88,8 +87,7 @@ void command_handler(void) {
 					} else {
 						reset_count = RESET_THRESHOLD_COUNT;
 						#ifdef DEBUG_SERIAL_ENABLED
-							serial_sendString("Resetting reset_count to ");
-							snprintf(serial_buf, SERIAL_BUF_LEN, "%d\r\n", RESET_THRESHOLD_COUNT);		// EEPROM_SIZE is in BYTES
+							snprintf(serial_buf, SERIAL_BUF_LEN, "Resetting reset_count to %02d\r\n", RESET_THRESHOLD_COUNT);		// EEPROM_SIZE is in BYTES
 							serial_sendString(serial_buf);
 						#endif
 					}

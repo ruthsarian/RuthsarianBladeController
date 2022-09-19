@@ -256,7 +256,7 @@ void set_segment_color_by_wheel_with_brightness(uint8_t segment, uint8_t wheel_v
 
 	#ifdef DEBUG_SERIAL_ENABLED
 	if (segment == 0) {
-		snprintf(serial_buf, SERIAL_BUF_LEN, "BRITE: %d (%d,%d) = %03d, %03d, %03d; %d - %d\r\n", wheel_value, color, brightness, red, green, blue, COLOR_PICKER_BRIGHTNESS_LEVELS, COLOR_PICKER_MIDDLE_LEVEL);
+		snprintf(serial_buf, SERIAL_BUF_LEN, "  [wheel:%3d, color:%3d, brightness:%d] R:%3d G:%3d B:%3d\r\n", wheel_value, color, brightness, red, green, blue);
 		serial_sendString(serial_buf);
 	}
 	#endif
