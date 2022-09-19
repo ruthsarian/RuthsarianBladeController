@@ -223,6 +223,9 @@ void set_segment_color_by_wheel_with_brightness(uint8_t segment, uint8_t wheel_v
 		green = 0;
 	}
 
+	// no need to bother with this if COLOR_PICKER_BRIGHTNESS_LEVELS is set to 1
+	#if (COLOR_PICKER_BRIGHTNESS_LEVELS > 1)
+
 	// brighten the color if brightness > middle_brightness_level
 	if (brightness > COLOR_PICKER_MIDDLE_LEVEL) {
 
@@ -247,6 +250,7 @@ void set_segment_color_by_wheel_with_brightness(uint8_t segment, uint8_t wheel_v
 		green = (uint8_t)(((float)(green * (brightness + 1)) / (COLOR_PICKER_MIDDLE_LEVEL + 1)) * (1 - ((float)1 / (COLOR_PICKER_MIDDLE_LEVEL + 1))));
 		blue  = (uint8_t)(((float)(blue  * (brightness + 1)) / (COLOR_PICKER_MIDDLE_LEVEL + 1)) * (1 - ((float)1 / (COLOR_PICKER_MIDDLE_LEVEL + 1))));
 	}
+	#endif
 
 	set_custom_segment_color(segment, red, green, blue);
 

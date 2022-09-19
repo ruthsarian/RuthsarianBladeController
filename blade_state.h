@@ -86,7 +86,7 @@
 																								// currently set to 4 so 3 levels of brightness and the 4th is all-white
 																								// should probably think about adding a special case where 255 = white so i can free-up color space
 																								//
-#define COLOR_PICKER_COLOR_COUNT		(uint8_t)(256 / COLOR_PICKER_BRIGHTNESS_LEVELS)			// the size of the color value space per brightness level
+#define COLOR_PICKER_COLOR_COUNT		(uint16_t)(256 / COLOR_PICKER_BRIGHTNESS_LEVELS)		// the size of the color value space per brightness level
 #define COLOR_PICKER_FORMULA_SEPARATOR	(uint8_t)(COLOR_PICKER_COLOR_COUNT / 3)					// the point at which different color formulas (red, green, blue) come into play
 #define COLOR_PICKER_MIDDLE_LEVEL		(uint8_t)((COLOR_PICKER_BRIGHTNESS_LEVELS - 1) / 2)		// identify the brightness level that represents the 'middle' or 'normal' level of brightness
 #define COLOR_PICKER_MAX_STEP			(uint8_t)(COLOR_PICKER_FORMULA_SEPARATOR / 2)			// this sets a lower limit on the number of available colors in the color picker (6)
@@ -100,6 +100,10 @@
 #define RESET_THRESHOLD_COUNT			((DMODE_MAX*2)+1)	// how many on/off cycles before a reset is triggered
 #define RESET_THRESHOLD_TIME			750					// maximum time blade must have been on/off in order to trigger a reset
 #define RESET_STATE_PERIOD				5000				// how long to remain in a reset state
+
+#if (COLOR_PICKER_BRIGHTNESS_LEVELS < 1)
+	#error "COLOR_PICKER_BRIGHTNESS_LEVELS must have a value greater than 0."
+#endif
 
 #ifdef __cplusplus
 extern "C" {
