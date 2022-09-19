@@ -32,6 +32,61 @@ uint8_t blade_multi_colors[][BLADE_SEGMENTS][RGB_SIZE] = {
 };
 uint8_t blade_multi_colors_len = sizeof(blade_multi_colors) / sizeof(blade_multi_colors[0]);
 
+// color picker step lookup table 
+uint8_t dcp_step_table[DCP_STEP_TABLE_MAX];
+uint8_t dcp_max_steps = 0;
+
+// dump the contents of dcp_step_table[] to aid in validation/debugging
+void dcp_step_table_dump(void) {
+	uint8_t i;
+
+	// dump all the macros/define values used for DCP step table calcuations
+	serial_sendString("\r\n");
+	snprintf(serial_buf, SERIAL_BUF_LEN, "COLOR_PICKER_BRIGHTNESS_LEVELS: %d\r\n", COLOR_PICKER_BRIGHTNESS_LEVELS);
+	serial_sendString(serial_buf);
+	snprintf(serial_buf, SERIAL_BUF_LEN, "COLOR_PICKER_COLOR_COUNT:       %d\r\n", COLOR_PICKER_COLOR_COUNT);
+	serial_sendString(serial_buf);
+	snprintf(serial_buf, SERIAL_BUF_LEN, "COLOR_PICKER_FORMULA_SEPARATOR: %d\r\n", COLOR_PICKER_FORMULA_SEPARATOR);
+	serial_sendString(serial_buf);
+	snprintf(serial_buf, SERIAL_BUF_LEN, "COLOR_PICKER_MIDDLE_LEVEL:      %d\r\n", COLOR_PICKER_MIDDLE_LEVEL);
+	serial_sendString(serial_buf);
+	snprintf(serial_buf, SERIAL_BUF_LEN, "COLOR_PICKER_MAX_STEP:          %d\r\n", COLOR_PICKER_MAX_STEP);
+	serial_sendString(serial_buf);
+
+	// dump the step table contents
+	serial_sendString("\r\n");
+	serial_sendString("DCP_STEP_TABLE[] Contents:\r\n");
+	for (i=0;i<dcp_max_steps;i++) {
+		snprintf(serial_buf, SERIAL_BUF_LEN, "  dsubmode: %d, dcp_step %d\r\n", i, dcp_step_table[i]);
+		serial_sendString(serial_buf);
+	}
+	serial_sendString("\r\n");
+}
+
+// precalculate the size of steps to take between colors when cycling through
+// colors in color picker mode for a given value of blade.dsubmode
+void precalc_dcp_step_table(void) {
+	uint8_t prev_step = 255;
+	uint8_t dsubmode_index = 0;
+	uint8_t step;
+
+	while(1) {
+		step = COLOR_PICKER_FORMULA_SEPARATOR / (2 + dsubmode_index);
+		if (step != prev_step) {
+			dcp_step_table[dcp_max_steps++] = step;
+			prev_step = step;
+		}
+		if (step == 1 || dcp_max_steps >= DCP_STEP_TABLE_MAX) {
+			break;
+		}
+		dsubmode_index++;
+	}
+	
+	#ifdef DEBUG_SERIAL_ENABLED
+		dcp_step_table_dump();
+	#endif
+}
+
 void dmode_handler(void) {
 	static uint8_t last_dmode = 0;
 	static uint8_t last_dsubmode = 0;
@@ -41,6 +96,14 @@ void dmode_handler(void) {
 	uint8_t dcp_step;
 	uint8_t dcp_color_value;
 	uint8_t dcp_formula_value;
+	uint8_t dcp_brightness = 0;
+
+	// one-time initialization of pdcp-step_table[];
+	// probably should call this from some other function (setup?), but as it's just for dmode and
+	// i want to keep dmode stuff together, it's here.
+	if (dcp_max_steps == 0) {
+		precalc_dcp_step_table();
+	}
 
 	// check for state in blade changes
 	if (last_blade_state != blade.state) {
@@ -338,6 +401,12 @@ void dmode_handler(void) {
 				/* The Color Picker: An Overly-Complicated Thing or My Decent Into Madness
 				 * A story by Ruthsarian
                  *
+				 *
+				 * There MUST be a much simpler, more logical, all around BETTER way to achieve this
+				 * effect, but I can't figure it out. I think I've pained myself into a corner and
+				 * and can't escape. Anyways...
+				 *
+				 * 
 				 * The color picker value is stored in the variable blade.dmode_step; an unsigned 
 				 * 8-bit value (0-255), while the blade's dmode state is DMODE_COLOR_PICKER or 
 				 * DMODE_COLOR_PICKER_PICKED.
@@ -365,6 +434,13 @@ void dmode_handler(void) {
 				 * in blade_state.c. They are somewhat replicated here. Any changes to those formulas in
 				 * set_segment_color_by_wheel_with_brightness() may require updates here.
 				 *
+				 *
+				 * 'color' vs 'formula'
+				 *
+				 * color value represents the value used to render the color somewhere within the current brightness level
+				 *
+				 * formula value represents the value of the color within the color formula that will be used to calculate 
+				 * the color within the current brightness level
 				 */
 
 
@@ -372,81 +448,52 @@ void dmode_handler(void) {
 				// this prevents color-stepping during ignition and extinguish
 				if ((blade.state & 0xF0) == BLADE_STATE_ON) {
 
-					// the size of the step to the next color is controlled by blade.dsubmode
-					// however we want step sizes that, as dsubmode increases, the number of
-					// available colors also increases.
+					// dcp_step value is based on value of blade.dsubmode which increments with a long off/on operation
+					// as dsubmode increases, step will decrease, allowing for more colors to be selected
 					//
-					// so we need to calculate dcp_step so it's size will increase the number of
-					// colors that we have compared to the previous value of dcp_step.
-					//
-					// thus we have this formula, rooted in the value of blade.dsubmode, to calculate
-					// the new value of dcp_step.
-					//
-					// as dsubmode increases, dcp_step will decrease until we get to 1 at which point we should
-					// roll-over to a dcp_step value of COLOR_PICKER_MAX_STEP (or thereabouts)
-					dcp_step = COLOR_PICKER_FORMULA_SEPARATOR / ((COLOR_PICKER_FORMULA_SEPARATOR / COLOR_PICKER_MAX_STEP) + (blade.dsubmode % COLOR_PICKER_MAX_STEP));
+					// these step values are pre-calculated and stored in dcp_step_table[] to make life easier on my 
+					// very weak brain.
+					dcp_step = dcp_step_table[blade.dsubmode % dcp_max_steps];
+
+					// record current brightness level before proceeding. will use this to determine if we've
+					// shot past the current brightness level and correct for that at the end
+					dcp_brightness = (uint8_t)(blade.dmode_step / COLOR_PICKER_COLOR_COUNT);
 
 					// increment to the next step of the color wheel
 					blade.dmode_step += dcp_step;
 
-					// if the step is more than one, we may need to adjust dmode_step in order to
-					// even out the spacing between colors in the color stepping
-					if (dcp_step > 1) {
+					// determine the current color value that will be used when setting blade color
+					dcp_color_value = blade.dmode_step % COLOR_PICKER_COLOR_COUNT;
 
-						// determine the current color value that will be used when setting blade color
+					// identify the color value within the current color formula					
+					dcp_formula_value = dcp_color_value % COLOR_PICKER_FORMULA_SEPARATOR;
+
+					// if too close to next color formula, push dmode_step to next color formula
+					if (COLOR_PICKER_FORMULA_SEPARATOR - dcp_formula_value <= (uint8_t)(dcp_step / 2)) {
+						blade.dmode_step += COLOR_PICKER_FORMULA_SEPARATOR - dcp_formula_value;
+						
+						// recalculate dcp_color_value and dcp_formula_value since dmode_step has changed
 						dcp_color_value = blade.dmode_step % COLOR_PICKER_COLOR_COUNT;
-
-						// color wheel has 3 formulas. each formula covers (COLOR_PICKER_COLOR_COUNT / 3) colors
-						// what the above statement means, we have 3 colors (red, green, blue)
-						// we need to determine a value for each RGB color. we use a formula to do this. 
-						// 
-						// we're stepping through COLOR_PICKER_COLOR_COUNT values; divide by 3, call it COLDIV for the next
-						// few lines.
-						// 0-(COLDIV-1) = red
-						// COLDIV-((COLDIV*2)-1) = green
-						// (COLDIV*2) - ((COLDIV*3)-1) = blue
-						//
-						// need to limit the number of steps within each formula for a consistent user experience
-						// so need to check for instances where dcp_color_value is >= 3 * the number of colors per step
-						// and readjust dmode_step accordingly 
-						//
-						// you would think the 3's cancel out, but we're doing some implicit rounding-down
-						// with conversion from float (result of division) to int, which means we can't cancel the 3's
-						//
-						if (dcp_color_value >= ((COLOR_PICKER_FORMULA_SEPARATOR * 3) - ((uint8_t)(dcp_step / 2)))) {
-
-							// push dmode_step over to restart the color wheel
-							blade.dmode_step += (COLOR_PICKER_COLOR_COUNT - dcp_color_value);
-						} else {
-
-							// COLOR_PICKER_COLOR_COUNT represents all values within a single run of the color wheel
-							// color wheel is broken into 3 colors (red, green, blue). depending on where in the color
-							// wheel we are, a different formula is used. 
-							// here we are calculating how far into the current color formula we are
-							dcp_formula_value = dcp_color_value % COLOR_PICKER_FORMULA_SEPARATOR;
-
-							// if we're less than 1 step value into the current color formula we've just started
-							// this color formulate. we need to subtract from dmode_step to put us right at the
-							// start of the new color formula.
-							//
-							// doing this guarantees we always get a full red, green, and blue color on the blade
-							if ((dcp_formula_value > 0) && (dcp_formula_value < dcp_step)) {
-								blade.dmode_step -= dcp_formula_value;
-
-							// if we're too close to the next formula, step forward into it
-							} else if (dcp_formula_value > (COLOR_PICKER_FORMULA_SEPARATOR - (uint8_t)(dcp_step / 2))) {
-								blade.dmode_step += COLOR_PICKER_FORMULA_SEPARATOR - dcp_formula_value;
-							}
-						}
+						dcp_formula_value = dcp_color_value % COLOR_PICKER_FORMULA_SEPARATOR;
 					}
 
+					// if too close to end of color space, reset to start of color space
 					//
-					// if (blade.dmode_step == 255) { (set blade white); }
-					// need corresponding (if 255, increment by 1 instead of dcp_step, at start of this section
-					//
+					// color space 'width' is being calculated by (COLOR_PICKER_FORMULA_SEPARATOR * 3) instead
+					// of COLOR_PICKER_COLOR_COUNT because if COLOR_PICKER_COLOR_COUNT is not cleanly divisible
+					// by 3 (R,G,B) we have as much a value of COLOR_PICKER_COLOR_COUNT that could be as much as 
+					// 2 beyond the max color space, which would affects how we detect being near the end of the 
+					// color space
+					if (dcp_color_value >= ((COLOR_PICKER_FORMULA_SEPARATOR * 3) - ((uint8_t)(dcp_step / 2)))) {
+						blade.dmode_step += (COLOR_PICKER_COLOR_COUNT - dcp_color_value);
 
-					// did we rollover on brightness?
-					if ((blade.dmode_step % COLOR_PICKER_COLOR_COUNT) < dcp_step) {
+					// if an increment has overshot to the next color formula, move back to start of next color formula
+					} else if ((dcp_formula_value > 0) && (dcp_formula_value < dcp_step)) {
+						blade.dmode_step -= dcp_formula_value;
+					}
+
+					// did incrementing dmode_step push us into the next brightness level? 
+					if (blade.dmode_step != (dcp_brightness * COLOR_PICKER_COLOR_COUNT) && (blade.dmode_step % COLOR_PICKER_COLOR_COUNT) < dcp_step) {
 
 						// then reduce by 1 brightness level so we maintain the same brightness
 						blade.dmode_step -= COLOR_PICKER_COLOR_COUNT; 

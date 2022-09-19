@@ -89,7 +89,8 @@
 #define COLOR_PICKER_COLOR_COUNT		(uint8_t)(256 / COLOR_PICKER_BRIGHTNESS_LEVELS)			// the size of the color value space per brightness level
 #define COLOR_PICKER_FORMULA_SEPARATOR	(uint8_t)(COLOR_PICKER_COLOR_COUNT / 3)					// the point at which different color formulas (red, green, blue) come into play
 #define COLOR_PICKER_MIDDLE_LEVEL		(uint8_t)((COLOR_PICKER_BRIGHTNESS_LEVELS - 1) / 2)		// identify the brightness level that represents the 'middle' or 'normal' level of brightness
-#define COLOR_PICKER_MAX_STEP			(uint8_t)(COLOR_PICKER_COLOR_COUNT / 8)					// set an upper limit on the size of step take through the color space
+#define COLOR_PICKER_MAX_STEP			(uint8_t)(COLOR_PICKER_FORMULA_SEPARATOR / 2)			// this sets a lower limit on the number of available colors in the color picker (6)
+#define DCP_STEP_TABLE_MAX				32														// set a limit to the size of the color picker step lookup table; should probably be 16 not 32
 
 // MEM Operation
 #define MEM_BLADE_BACKUP				0
