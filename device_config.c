@@ -18,6 +18,7 @@
 #include "eeprom.h"
 #include "device_config.h"
 #include "blade_state.h"
+#include "dmode_handler.h"
 #include "pwm.h"
 
 

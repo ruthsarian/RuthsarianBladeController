@@ -8,6 +8,7 @@
 #include "device_config.h"
 #include "data.h"
 #include "blade_state.h"
+#include "dmode_handler.h"
 
 void command_handler(void) {
 	static uint32_t last_off_time = 0;

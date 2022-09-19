@@ -12,6 +12,7 @@
 #include "device_config.h"
 #include "blade_state.h"
 #include "data.h"
+#include "dmode_handler.h"
 
 // program setup
 void setup() {

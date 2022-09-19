@@ -7,6 +7,7 @@
 #include "millis.h"
 #include "serial.h"
 #include "blade_state.h"
+#include "dmode_handler.h"
 #include "pwm.h"
 
 // multi-color blade presets
@@ -42,15 +43,15 @@ void dcp_step_table_dump(void) {
 
 	// dump all the macros/define values used for DCP step table calcuations
 	serial_sendString("\r\n");
-	snprintf(serial_buf, SERIAL_BUF_LEN, "COLOR_PICKER_BRIGHTNESS_LEVELS: %d\r\n", COLOR_PICKER_BRIGHTNESS_LEVELS);
+	snprintf(serial_buf, SERIAL_BUF_LEN, "DCP_BRIGHTNESS_LEVELS: %d\r\n", DCP_BRIGHTNESS_LEVELS);
 	serial_sendString(serial_buf);
-	snprintf(serial_buf, SERIAL_BUF_LEN, "COLOR_PICKER_COLOR_COUNT:       %d\r\n", COLOR_PICKER_COLOR_COUNT);
+	snprintf(serial_buf, SERIAL_BUF_LEN, "DCP_COLOR_COUNT:       %d\r\n", DCP_COLOR_COUNT);
 	serial_sendString(serial_buf);
-	snprintf(serial_buf, SERIAL_BUF_LEN, "COLOR_PICKER_FORMULA_SEPARATOR: %d\r\n", COLOR_PICKER_FORMULA_SEPARATOR);
+	snprintf(serial_buf, SERIAL_BUF_LEN, "DCP_FORMULA_SEPARATOR: %d\r\n", DCP_FORMULA_SEPARATOR);
 	serial_sendString(serial_buf);
-	snprintf(serial_buf, SERIAL_BUF_LEN, "COLOR_PICKER_MIDDLE_LEVEL:      %d\r\n", COLOR_PICKER_MIDDLE_LEVEL);
+	snprintf(serial_buf, SERIAL_BUF_LEN, "DCP_MIDDLE_LEVEL:      %d\r\n", DCP_MIDDLE_LEVEL);
 	serial_sendString(serial_buf);
-	snprintf(serial_buf, SERIAL_BUF_LEN, "COLOR_PICKER_MAX_STEP:          %d\r\n", COLOR_PICKER_MAX_STEP);
+	snprintf(serial_buf, SERIAL_BUF_LEN, "DCP_MAX_STEP:          %d\r\n", DCP_MAX_STEP);
 	serial_sendString(serial_buf);
 
 	// dump the step table contents
@@ -71,7 +72,7 @@ void precalc_dcp_step_table(void) {
 	uint8_t step;
 
 	while(1) {
-		step = COLOR_PICKER_FORMULA_SEPARATOR / (2 + dsubmode_index);
+		step = DCP_FORMULA_SEPARATOR / (2 + dsubmode_index);
 		if (step != prev_step) {
 			dcp_step_table[dcp_max_steps++] = step;
 			prev_step = step;
@@ -85,6 +86,90 @@ void precalc_dcp_step_table(void) {
 	#ifdef DEBUG_SERIAL_ENABLED
 		dcp_step_table_dump();
 	#endif
+}
+
+// similar to set_segment_color_by_wheel with the extra feature of
+// generating not just color, but levels of brightness based on BRIGHTNESS_LEVELS
+void set_dcp_segment_color(uint8_t segment, uint8_t wheel_value) {
+
+	uint8_t red, green, blue, color, brightness;
+
+	// separate color and brightness values from the supplied wheel value
+	color = wheel_value % DCP_COLOR_COUNT;
+	brightness = (uint8_t)(wheel_value / DCP_COLOR_COUNT);
+
+	// calculate the red, green, and blue components of the color based on color value.
+	//
+	// this formula is based on the wheel() function found here:
+	// https://learn.adafruit.com/multi-tasking-the-arduino-part-3/utility-functions
+	if (color < DCP_FORMULA_SEPARATOR) {
+		green = color * 3 * DCP_BRIGHTNESS_LEVELS;
+		red = ~green;
+		blue = 0;
+		} else if (color < (2 * DCP_FORMULA_SEPARATOR)) {
+		color -= DCP_FORMULA_SEPARATOR;
+		blue = color * 3 * DCP_BRIGHTNESS_LEVELS;
+		green = ~blue;
+		red = 0;
+		} else {
+		color -= (2 * DCP_FORMULA_SEPARATOR);
+		red = color * 3 * DCP_BRIGHTNESS_LEVELS;
+		blue = ~red;
+		green = 0;
+	}
+
+	// no need to bother with this if DCP_BRIGHTNESS_LEVELS is set to 1
+	#if (DCP_BRIGHTNESS_LEVELS > 1)
+
+	// brighten the color if brightness > middle_brightness_level
+	if (brightness > DCP_MIDDLE_LEVEL) {
+
+		// alternative formulas
+		//		red   -= (uint8_t)((red   - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][RED_IDX]) * ((float)(brightness - DCP_MIDDLE_LEVEL)/(DCP_BRIGHTNESS_LEVELS - middle_brightness_level - 1)));
+		//		red   -= (uint8_t)((red   - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][RED_IDX]) * ((float)(brightness - DCP_MIDDLE_LEVEL)/(DCP_BRIGHTNESS_LEVELS - middle_brightness_level - 1)) * (1 - ((float)1 / (middle_brightness_level + 1))));
+
+		red   -= (uint8_t)((red   - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][RED_IDX]) * ((float)(brightness - DCP_MIDDLE_LEVEL)/(DCP_BRIGHTNESS_LEVELS - DCP_MIDDLE_LEVEL - 1)) * ((float)brightness / (DCP_BRIGHTNESS_LEVELS - 1)));
+		green -= (uint8_t)((green - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][GRN_IDX]) * ((float)(brightness - DCP_MIDDLE_LEVEL)/(DCP_BRIGHTNESS_LEVELS - DCP_MIDDLE_LEVEL - 1)) * ((float)brightness / (DCP_BRIGHTNESS_LEVELS - 1)));
+		blue  -= (uint8_t)((blue  - stock_blade_colors[STOCK_BLADE_COLOR_WHITE][BLU_IDX]) * ((float)(brightness - DCP_MIDDLE_LEVEL)/(DCP_BRIGHTNESS_LEVELS - DCP_MIDDLE_LEVEL - 1)) * ((float)brightness / (DCP_BRIGHTNESS_LEVELS - 1)));
+
+		// darken the color if brightness < middle_brightness_level
+		} else if (brightness < DCP_MIDDLE_LEVEL) {
+
+		// alternative formulas
+		//		red   >>= (middle_brightness_level - brightness);
+		//		red   = (uint8_t)(((float)red / 255) * (192 >> (DCP_MIDDLE_LEVEL - brightness)));
+		//		red   = (uint8_t)(((float)red / 0xFF) * (0xFF >> (DCP_MIDDLE_LEVEL - brightness)));
+		//		red   = (uint8_t)((float)(red * (brightness + 1)) / (DCP_MIDDLE_LEVEL + 1));
+
+		red   = (uint8_t)(((float)(red   * (brightness + 1)) / (DCP_MIDDLE_LEVEL + 1)) * (1 - ((float)1 / (DCP_MIDDLE_LEVEL + 1))));
+		green = (uint8_t)(((float)(green * (brightness + 1)) / (DCP_MIDDLE_LEVEL + 1)) * (1 - ((float)1 / (DCP_MIDDLE_LEVEL + 1))));
+		blue  = (uint8_t)(((float)(blue  * (brightness + 1)) / (DCP_MIDDLE_LEVEL + 1)) * (1 - ((float)1 / (DCP_MIDDLE_LEVEL + 1))));
+	}
+	#endif
+
+	set_custom_segment_color(segment, red, green, blue);
+
+	#ifdef DEBUG_SERIAL_ENABLED
+	if (segment == 0) {
+		snprintf(serial_buf, SERIAL_BUF_LEN, "  [wheel:%3d, color:%3d, brightness:%d] R:%3d G:%3d B:%3d\r\n", wheel_value, color, brightness, red, green, blue);
+		serial_sendString(serial_buf);
+	}
+	#endif
+}
+
+// similar to set_color_by_wheel except it takes BRIGHTNESS_LEVELS into consideration
+void set_dcp_color(uint8_t color) {
+	uint8_t i;
+
+	// calculate color for first segment
+	set_dcp_segment_color(0, color);
+	
+	// copy values from first segment to other 3 segments
+	for (i=1;i<3;i++) {
+		segment_color[i][RED_IDX] = segment_color[0][RED_IDX];
+		segment_color[i][GRN_IDX] = segment_color[0][GRN_IDX];
+		segment_color[i][BLU_IDX] = segment_color[0][BLU_IDX];
+	}
 }
 
 void dmode_handler(void) {
@@ -117,15 +202,15 @@ void dmode_handler(void) {
 				// color picker mode; allow clash to trigger manual color change
 				case DMODE_COLOR_PICKER:
 					next_step_time = millis() + 4000;					// pause auto-picker
-					blade.dmode_step += COLOR_PICKER_COLOR_COUNT;		// increment brightness level
+					blade.dmode_step += DCP_COLOR_COUNT;		// increment brightness level
 
 					// if overflow on brightness change, need to adjust count because sometimes
-					// COLOR_PICKER_BRIGHTNESS_LEVELS does not divide evenly into 256
-					if (blade.dmode_step < COLOR_PICKER_COLOR_COUNT) {
-						blade.dmode_step += 256 - (COLOR_PICKER_COLOR_COUNT * COLOR_PICKER_BRIGHTNESS_LEVELS);
+					// DCP_BRIGHTNESS_LEVELS does not divide evenly into 256
+					if (blade.dmode_step < DCP_COLOR_COUNT) {
+						blade.dmode_step += 256 - (DCP_COLOR_COUNT * DCP_BRIGHTNESS_LEVELS);
 					}
 
-					set_color_by_wheel_with_brightness(blade.dmode_step);	// display new color
+					set_dcp_color(blade.dmode_step);	// display new color
 					break;
 
 				default:
@@ -165,7 +250,7 @@ void dmode_handler(void) {
 			// perform actions to set blade into correct state for the given mode
 			switch (blade.dmode) {
 				case DMODE_COLOR_PICKER_PICKED:
-					set_color_by_wheel_with_brightness(blade.dmode_step);	// set the blade color
+					set_dcp_color(blade.dmode_step);	// set the blade color
 					break;
 			}
 
@@ -183,7 +268,7 @@ void dmode_handler(void) {
 
 			case DMODE_BLADE_WHEEL:
 			case DMODE_COLOR_PICKER:
-				blade.dmode_step = COLOR_PICKER_MIDDLE_LEVEL * COLOR_PICKER_COLOR_COUNT;
+				blade.dmode_step = DCP_MIDDLE_LEVEL * DCP_COLOR_COUNT;
 
 			case DMODE_STOCK:
 			case DMODE_COLOR_PICKER_PICKED:
@@ -401,26 +486,24 @@ void dmode_handler(void) {
 				/* The Color Picker: An Overly-Complicated Thing or My Decent Into Madness
 				 * A story by Ruthsarian
                  *
-				 *
-				 * There MUST be a much simpler, more logical, all around BETTER way to achieve this
-				 * effect, but I can't figure it out. I think I've painted myself into a corner and
-				 * and can't escape. Anyways...
-				 *
+				 * \\\ There MUST be a much simpler, more logical, all around BETTER way to achieve this
+				 * /// effect, but I can't figure it out. I think I've painted myself into a corner and
+				 * \\\ and can't escape. Anyways...
 				 * 
 				 * The color picker value is stored in the variable blade.dmode_step, an unsigned 
 				 * 8-bit value (0-255), while the blade's dmode state is DMODE_COLOR_PICKER or 
 				 * DMODE_COLOR_PICKER_PICKED.
 				 * 
 				 * The color picker supports multiple levels of brightness. How many levels
-				 * is determined by the define COLOR_PICKER_BRIGHTNESS_LEVELS. 
+				 * is determined by the define DCP_BRIGHTNESS_LEVELS. 
 				 *
 				 * "Brightness" in this context refers to adjusting the color towards or away from
 				 * the color white. It does not increase the luminance of the blade. This makes it
 				 * possible for the color picker to produce pastel colors as well as dim colors.
 				 *
 				 * The number of possible color values per level of brightness is calculated at compile time by 
-				 * the #define COLOR_PICKER_COLOR_COUNT. As the color picker value is an 8-bit value, 
-				 * COLOR_PICKER_COLOR_COUNT is calculated by dividing 256 by COLOR_PICKER_BRIGHTNESS_LEVELS.
+				 * the #define DCP_COLOR_COUNT. As the color picker value is an 8-bit value, 
+				 * DCP_COLOR_COUNT is calculated by dividing 256 by DCP_BRIGHTNESS_LEVELS.
 				 * 
 				 * The color picker begins at middle brightness (colors that are not dim and not pastel).
 				 * Brightness level can be changed by triggering a clash while the color picker is active.
@@ -446,7 +529,7 @@ void dmode_handler(void) {
 				 *
 				 * The variable blade.dmode_step contains both color and brightness level. The 'color' value
 				 * represents the value used to generate the red, green, and blue components prior to adjusting
-				 * them to the current brightness level. This will be a value between 0 and COLOR_PICKER_COLOR_COUNT.
+				 * them to the current brightness level. This will be a value between 0 and DCP_COLOR_COUNT.
 				 * 
 				 * When calculating the RGB components of the color, each component has a separate formula that is 
 				 * applied to the color value to determine that component's value. When referring to the 'formula'
@@ -456,9 +539,8 @@ void dmode_handler(void) {
 				 * 'formula' is taken into account to identify the point at which the color value would be pure
 				 * red, pure green, or pure blue. that way blade.dmode_step can be adjusted to land exactly at
 				 * that color when it would otherwise skip past it.
-				 * (TODO) Perhaps I need to replace 'formula' with 'component' in the comments and variables names.
+				 * (TODO) Perhaps I need to replace 'formula' with 'component' in the comments and variable names.
 				 */
-
 
 				// only step to next color if blade is in an on state.
 				// this prevents color-stepping during ignition and extinguish
@@ -473,35 +555,35 @@ void dmode_handler(void) {
 
 					// record current brightness level before proceeding. will use this to determine if we've
 					// shot past the current brightness level and correct for that at the end
-					dcp_brightness = (uint8_t)(blade.dmode_step / COLOR_PICKER_COLOR_COUNT);
+					dcp_brightness = (uint8_t)(blade.dmode_step / DCP_COLOR_COUNT);
 
 					// increment to the next step of the color wheel
 					blade.dmode_step += dcp_step;
 
 					// determine the current color value that will be used when setting blade color
-					dcp_color_value = blade.dmode_step % COLOR_PICKER_COLOR_COUNT;
+					dcp_color_value = blade.dmode_step % DCP_COLOR_COUNT;
 
 					// derive the current formula value from the color value					
-					dcp_formula_value = dcp_color_value % COLOR_PICKER_FORMULA_SEPARATOR;
+					dcp_formula_value = dcp_color_value % DCP_FORMULA_SEPARATOR;
 
 					// if too close to next color formula, push dmode_step to next color formula
-					if (COLOR_PICKER_FORMULA_SEPARATOR - dcp_formula_value <= (uint8_t)(dcp_step / 2)) {
-						blade.dmode_step += COLOR_PICKER_FORMULA_SEPARATOR - dcp_formula_value;
+					if (DCP_FORMULA_SEPARATOR - dcp_formula_value <= (uint8_t)(dcp_step / 2)) {
+						blade.dmode_step += DCP_FORMULA_SEPARATOR - dcp_formula_value;
 						
 						// recalculate dcp_color_value and dcp_formula_value since dmode_step has changed
-						dcp_color_value = blade.dmode_step % COLOR_PICKER_COLOR_COUNT;
-						dcp_formula_value = dcp_color_value % COLOR_PICKER_FORMULA_SEPARATOR;
+						dcp_color_value = blade.dmode_step % DCP_COLOR_COUNT;
+						dcp_formula_value = dcp_color_value % DCP_FORMULA_SEPARATOR;
 					}
 
 					// if too close to end of color space, reset to start of color space
 					//
-					// color space 'width' is being calculated by (COLOR_PICKER_FORMULA_SEPARATOR * 3) instead
-					// of COLOR_PICKER_COLOR_COUNT because if COLOR_PICKER_COLOR_COUNT is not cleanly divisible
-					// by 3 (R,G,B) we have as much a value of COLOR_PICKER_COLOR_COUNT that could be as much as 
+					// color space 'width' is being calculated by (DCP_FORMULA_SEPARATOR * 3) instead
+					// of DCP_COLOR_COUNT because if DCP_COLOR_COUNT is not cleanly divisible
+					// by 3 (R,G,B) we have as much a value of DCP_COLOR_COUNT that could be as much as 
 					// 2 beyond the max color space, which would affects how we detect being near the end of the 
 					// color space
-					if (dcp_color_value >= ((COLOR_PICKER_FORMULA_SEPARATOR * 3) - ((uint8_t)(dcp_step / 2)))) {
-						blade.dmode_step += (COLOR_PICKER_COLOR_COUNT - dcp_color_value);
+					if (dcp_color_value >= ((DCP_FORMULA_SEPARATOR * 3) - ((uint8_t)(dcp_step / 2)))) {
+						blade.dmode_step += (DCP_COLOR_COUNT - dcp_color_value);
 
 					// if an increment has overshot to the next color formula, move back to start of next color formula
 					} else if ((dcp_formula_value > 0) && (dcp_formula_value < dcp_step)) {
@@ -509,14 +591,14 @@ void dmode_handler(void) {
 					}
 
 					// did incrementing dmode_step push us into the next brightness level? 
-					if (blade.dmode_step != (dcp_brightness * COLOR_PICKER_COLOR_COUNT) && (blade.dmode_step % COLOR_PICKER_COLOR_COUNT) < dcp_step) {
+					if (blade.dmode_step != (dcp_brightness * DCP_COLOR_COUNT) && (blade.dmode_step % DCP_COLOR_COUNT) < dcp_step) {
 
 						// then reduce by 1 brightness level so we maintain the same brightness
-						blade.dmode_step -= COLOR_PICKER_COLOR_COUNT; 
+						blade.dmode_step -= DCP_COLOR_COUNT; 
 					}
 				}
 
-				set_color_by_wheel_with_brightness(blade.dmode_step);
+				set_dcp_color(blade.dmode_step);
 				next_step_time = millis() + 2000;
 				break;
 

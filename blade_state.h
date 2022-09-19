@@ -53,57 +53,14 @@
 #define STOCK_BLADE_COLOR_FLASH_ORANGE	11
 #define STOCK_BLADE_COLOR_LEN			12	// total number of colors supported by STOCK blades
 
-// Display Modes (DMODE)
-#define DMODE_STOCK						0
-#define DMODE_COLOR_PICKER				1
-#define DMODE_COLOR_PICKER_PICKED		2
-#define DMODE_BLADE_WHEEL				3
-#define DMODE_SEGMENT_WHEEL				4
-#define DMODE_MULTI_MODE				5
-#define DMODE_MAX						6	// maximum dmode value; once reached, dmode will reset to 0
-
-// Display Sub-Modes (DSUBMODE)
-#define DSUBMODE_NORMAL					0
-#define DSUBMODE_FLICKER_FULL			1
-#define DSUBMODE_FLICKER_SEGMENTED		2
-#define DSUBMODE_FLICKER_BRIGHT			3
-#define DSUBMODE_FLICKER_DARK			4
-#define DSUBMODE_FLICKER_GRADIENT		5
-#define DSUBMODE_BREATHING				6
-#define DSUBMODE_STATIC_GRADIENT_1		7
-#define DSUBMODE_STATIC_GRADIENT_2		8
-#define DSUBMODE_BRIGHTNESS_66			9
-#define DSUBMODE_BRIGHTNESS_33			10
-#define DSUBMODE_BRIGHTNESS_10			11
-#define DSUBMODE_MAX					12	// a cheap way to keep track of how many dsubmodes there are
-
-// DMODE Timing Elements
-#define DMODE_THRESHOLD_TIME			1000	// remain powered off for less than this value in milliseconds to increment display mode (DMODE)
-#define DSUBMODE_THRESHOLD_TIME			3000	// remain powered off for less than this value in milliseconds, but more than DSUBMODE_THRESHOLD_TIME, to increment display sub-mode (DSUBMODE)
-
-// color picker related variables
-#define COLOR_PICKER_BRIGHTNESS_LEVELS	4														// recommend this stay below 8
-																								// currently set to 4 so 3 levels of brightness and the 4th is all-white
-																								// should probably think about adding a special case where 255 = white so i can free-up color space
-																								//
-#define COLOR_PICKER_COLOR_COUNT		(uint16_t)(256 / COLOR_PICKER_BRIGHTNESS_LEVELS)		// the size of the color value space per brightness level
-#define COLOR_PICKER_FORMULA_SEPARATOR	(uint8_t)(COLOR_PICKER_COLOR_COUNT / 3)					// the point at which different color formulas (red, green, blue) come into play
-#define COLOR_PICKER_MIDDLE_LEVEL		(uint8_t)((COLOR_PICKER_BRIGHTNESS_LEVELS - 1) / 2)		// identify the brightness level that represents the 'middle' or 'normal' level of brightness
-#define COLOR_PICKER_MAX_STEP			(uint8_t)(COLOR_PICKER_FORMULA_SEPARATOR / 2)			// this sets a lower limit on the number of available colors in the color picker (6)
-#define DCP_STEP_TABLE_MAX				32														// set a limit to the size of the color picker step lookup table; should probably be 16 not 32
-
 // MEM Operation
 #define MEM_BLADE_BACKUP				0
 #define MEM_BLADE_RESTORE				1
 
 // RESET Configuration
-#define RESET_THRESHOLD_COUNT			((DMODE_MAX*2)+1)	// how many on/off cycles before a reset is triggered
+#define RESET_THRESHOLD_COUNT			13					// how many on/off cycles before a reset is triggered; suggested value: ((DMODE_MAX * 2) + 1)
 #define RESET_THRESHOLD_TIME			750					// maximum time blade must have been on/off in order to trigger a reset
 #define RESET_STATE_PERIOD				5000				// how long to remain in a reset state
-
-#if (COLOR_PICKER_BRIGHTNESS_LEVELS < 1)
-	#error "COLOR_PICKER_BRIGHTNESS_LEVELS must have a value greater than 0."
-#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -180,13 +137,6 @@ void set_segment_color_by_wheel(uint8_t segment, uint8_t wheel_value);
 // set the blade's color based on a single byte value
 void set_color_by_wheel(uint8_t color);
 
-// similar to set_segment_color_by_wheel with the extra feature of
-// generating not just color, but levels of brightness based on BRIGHTNESS_LEVELS
-void set_segment_color_by_wheel_with_brightness(uint8_t segment, uint8_t wheel_value);
-
-// similar to set_color_by_wheel except it takes BRIGHTNESS_LEVELS into consideration
-void set_color_by_wheel_with_brightness(uint8_t colorls);
-
 // set the blade color using the stock color lookup tables and the value stored 
 // in the global blade_state variable
 void set_blade_color(void);
@@ -237,9 +187,6 @@ void animate_handler(void);
 // calculations are done outside of pwm_handler() because the floating-point calculations
 // were slowing pwm_handler() down too much
 void true_segment_brightness_handler(void);
-
-// manage custom display modes and animations
-void dmode_handler(void);
 
 #ifdef __cplusplus
 } // extern "C"
