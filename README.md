@@ -13,6 +13,10 @@ the blade to ignite that color, but the blade will ignore the command. The
 goal was to enable blades to support those commands. That goal has been
 achieved, and more.
 
+[This YouTube playlist](https://www.youtube.com/playlist?list=PL1LWtA1iy9hvn_TC9zpnyU5pupyrw3pX3)
+contains videos documenting the development, assembly, and installation 
+process of this PCB.
+
 ## State of the Project
 This project comprises of two components, the PCB and the firmware.
 
