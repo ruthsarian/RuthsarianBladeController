@@ -5,7 +5,7 @@ To make full use of this project you will need to assemble a blade controller, p
 
 This project was started after it was discovered by [Dead Bothans Society](https://www.youtube.com/channel/UC8jRkAtfVRbUhOumBRoJw4g) that Savi's Workshop lightsaber hilts [recognize orange and cyan kyber crystals](https://www.youtube.com/watch?v=fNlXbNlJkZo) and will command the blade to ignite that color, but the blade will ignore the command. The goal was to enable blades to support those commands. That goal has been achieved, and more.
 
-## Ruthsarian Blade Controller Operation
+## Blade Controller Operation
 This blade controller provides the ability to apply different colors and animation effects to the blade. There is a blade display mode (referred to as 'DMODE' in the code) and a blade animation mode (referred to as 'DSUBMODE' in the code).
 
 Changing modes is controlled by powering off the blade and then turning it back on. The time the blade is off determines how the blade changes (if at all). If the blade is off for less than 1 second (defined by DMODE_THRESHOLD_TIME in the code) then the display mode changes.
