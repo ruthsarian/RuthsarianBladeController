@@ -118,7 +118,10 @@ Below are required steps to configure your IDE environment for compiling this fi
 - Locate platform.txt within the megaTinyCore installation.
 	- Windows: %LOCALAPPDATA%\Arduino15\packages\megaTinyCore\hardware\megaavr\\*\<version\>*\platform.txt
 - Edit platform.txt as follows:
-	- locate line that begins "compiler.c.elf.flags=" and remove "-mrelax"
+	- locate line that begins "compiler.c.elf.flags=" and remove "-mrelax" 
+	- if you see "{build.mrelax}" instead of "-mrelax" you have a newer version of megaTinyCore
+- For newer versions of megaTinyCore locate boards.txt in the same directory
+	- locate the line that beings with "atxy6.build.mrelax" and delete "-mrelax"
 
 #### Microchip Studio
 - Project -\> Properties (ALT+F7) 
