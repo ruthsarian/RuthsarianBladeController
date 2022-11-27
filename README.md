@@ -59,7 +59,9 @@ and Microchip Studio are verified to work.
 - Install megaTinyCore (https://github.com/SpenceKonde/megaTinyCore)
 - Tools -\> Board: ATtiny1606, Chip: ATtiny1606, Clock: 10MHz (internal), millis()/micros() Timer: TCB0
 - Edit megaTinyCore platform.txt located at %LOCALAPPDATA%\Arduino15\packages\megaTinyCore\hardware\megaavr\\*\<version\>*\platform.txt
-	- locate line that begins "compiler.c.elf.flags=" and remove "-mrelax"
+	- Locate line that begins "compiler.c.elf.flags=" and remove "-mrelax" or "{build.mrelax}"
+	- Alternatively, edit boards.txt in the same directory, locate the line that begins with "atxy6.build.mrelax" and remove "-mrelax"
+	- Failure to do this will result in blades that do not let you select different display modes.
 
 ## Programming the Blade Controller
 The ATtiny806/1606 uses the UPDI programming interface/protocol to program
