@@ -63,15 +63,15 @@ The PCB includes a 3-position header which can be used to attach two switches. T
 A [2-position DIP switch](https://www.ebay.com/sch/i.html?_nkw=2+position+dip+switch&_sacat=0) glued to the end of the inner blade connector housing with a hole drilled through the outer blade connector housing to provide access to the switches is one possible approach, but not the only one. See [these  images](https://twitter.com/ruthsarian/status/1479264695085326337/photo/1) for an example of this setup.
 
 ## Blade Controller PCB
-The PCB for the replacement blade controller may be [ordered through OSHPark](https://oshpark.com/shared_projects/asa59Q8P). The PCB design files are [available through EasyEDA](https://easyeda.com/ruthsarian/ruthsarian-blade-controller) if you wish to make your own changes or modifications to the PCB.
+The PCB for the replacement blade controller may be [ordered through OSHPark](https://oshpark.com/shared_projects/UBNsoFjS). The PCB design files are [available through EasyEDA](https://easyeda.com/ruthsarian/ruthsarian-blade-controller) if you wish to make your own changes or modifications to the PCB.
 
 ### PCB Versions
 PCBs are versioned by a number followed by a letter. The number will indicate the PCB revision while the letter indicates the voltage regulator used to drive blade's LEDs.
 
-There are currently two different letter versions: [an 'H' version](https://oshpark.com/shared_projects/NbIljZq0) and [an 'L' version](https://oshpark.com/shared_projects/asa59Q8P). 
+There are currently two different letter versions: [an 'H' version](https://oshpark.com/shared_projects/NbIljZq0) and [an 'L' version](https://oshpark.com/shared_projects/UBNsoFjS). 
 The 'H' version was developed first, however limited availability of ['H' version's voltage regulator](https://www.mouser.com/ProductDetail/511-LD39200PU33R) necessitated a modification to support [a different voltage regulator](https://www.mouser.com/ProductDetail/511-LDL112PV33R), thus the 'L' version. Unfortunately both regulators (as of October 2022) are on backorder. There are currently no plans to add a third letter version of this PCB.
 
-The current major version of this PCB is 4. There are a few different minor versions (4.0, 4.1, 4.2). All minor versions are functionally identical and the differences between each only relate to resolving issues with the solder paste layer that would have a small impact on board assembly. 
+The current major version of this PCB is 4. There are a few different minor versions (4.0, 4.1, 4.4). All minor versions are functionally identical and the differences between each only relate to resolving issues with the solder paste layer that would have a small impact on board assembly. 
 
 ### [PCB](https://en.wikipedia.org/wiki/Printed_circuit_board) [BOM](https://en.wikipedia.org/wiki/Bill_of_materials)
 The table below contains a list of all the components needed to assemble the PCB. The rows with gray backgrounds contain example components that meet the criteria. The linked components be on backorder or no longer available. However alternatives will likely be available. For example, R8 is a 10k resistor in an 0402 package. Searching for other 10k resistors in an 0402 package will yield dozens of available options, any of which would work. You are not limited to just the components linked to in the BOM so long as they meet the criteria given for that component.
