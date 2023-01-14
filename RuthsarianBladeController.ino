@@ -8,7 +8,16 @@
  * megaTinyCore Arduino core. For download and installation instructions
  * see https://github.com/ruthsarian/RuthsarianBladeController
  * 
- * 
+ * -- Arduino IDE Board Configuration --
+ *                    Board: ATtiny3226/3216/1626/1616/1606/826/816/806/426/416...
+ *                     Chip: ATtiny1606
+ *                    Clock: 10 MHz internal
+ *  millis()/micros() Timer: TCB0
+ *             Startup Time: 8ms
+ *        BOD Voltage Level: 2.6V
+ *
+ *  the rest of the settings you can leave at their default values
+ *  
  * -- NOTICE --
  *   you MUST edit platform.txt located at:
  *     %LOCALAPPDATA%\Arduino15\packages\megaTinyCore\hardware\megaavr\<megaTinyCore version>\
