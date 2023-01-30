@@ -68,7 +68,7 @@ The PCB for the replacement blade controller may be [ordered through OSHPark](ht
 ### PCB Versions
 PCBs are versioned by a number followed by a letter. The number will indicate the PCB revision while the letter indicates the voltage regulator used to drive blade's LEDs.
 
-There are currently two different letter versions: [an 'H' version](https://oshpark.com/shared_projects/NbIljZq0) and [an 'L' version](https://oshpark.com/shared_projects/UBNsoFjS). 
+There are currently two different letter versions: [an 'H' version](https://oshpark.com/shared_projects/ZJGp5EAX) and [an 'L' version](https://oshpark.com/shared_projects/UBNsoFjS). 
 The 'H' version was developed first, however limited availability of ['H' version's voltage regulator](https://www.mouser.com/ProductDetail/511-LD39200PU33R) necessitated a modification to support [a different voltage regulator](https://www.mouser.com/ProductDetail/511-LDL112PV33R), thus the 'L' version. Unfortunately both regulators (as of October 2022) are on backorder. There are currently no plans to add a third letter version of this PCB.
 
 The current major version of this PCB is 4. There are a few different minor versions (4.0, 4.1, 4.4). All minor versions are functionally identical and the differences between each only relate to resolving issues with the solder paste layer that would have a small impact on board assembly. 
