@@ -79,7 +79,7 @@ The table below contains a list of all the components needed to assemble the PCB
 |         Designator | Component |
 | -----------------: | :-------- |
 |             **U1** | ATtiny1606, VQFN20 package |
-|                    | [ATTINY1606-MF](https://www.mouser.com/ProductDetail/556-ATTINY1606-MF), [ATTINY1606-MN](https://www.mouser.com/ProductDetail/556-ATTINY1606-MN), [ATTINY1606-MFR](https://www.mouser.com/ProductDetail/556-ATTINY1606-MFR) |
+|                    | [ATTINY1606-MF](https://www.mouser.com/ProductDetail/556-ATTINY1606-MF), [ATTINY1606-MN](https://www.mouser.com/ProductDetail/556-ATTINY1606-MN), [ATTINY1606-MFR](https://www.mouser.com/ProductDetail/556-ATTINY1606-MFR), [ATTINY1606-MNR](https://www.mouser.com/ProductDetail/579-ATTINY1606-MNR) |
 |             **U2** | voltage regulator, 3.3V, SOT23 package quiescent current <= 1uA  <br>pinout: 1-GND, 2-OUT, 3-IN |
 |                    | [AP2138N-3.3TRG1](https://www.mouser.com/ProductDetail/621-AP2138N-3.3TRG1), [XC6206P331MR-G](https://www.mouser.com/ProductDetail/865-XC6206P331MR-G), [XC6206P332MR-G](https://www.mouser.com/ProductDetail/865-XC6206P332MR-G) |
 |             **U3** | voltage regulator, 3.3V, DFN-6 package, current rated > 1A  <br>'L' version pinout: 1-EN, 2-GND, 3-NC, 4-OUT, 5-NC, 6-IN <br> 'H' version pinout: 1-OUT, 2-SENSE, 3-GND, 4-PG, 5-EN, 6-IN |
