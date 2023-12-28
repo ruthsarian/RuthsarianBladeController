@@ -102,6 +102,8 @@ The table below contains a list of all the components needed to assemble the PCB
 |                    | [CR0402-JW-102GLF](https://www.mouser.com/ProductDetail/652-CR0402JW-102GLF) |
 |             **R8** | resistor, 10kOhm, 0402 package |
 |                    | [CR0402-JW-103GLF](https://www.mouser.com/ProductDetail/652-CR0402-JW-103GLF) |
+|         *optional* | 2 position DIP switch |
+|                    | [CTS 208](https://www.mouser.com/ProductDetail/774-2082), [eBay options](https://www.ebay.com/sch/i.html?_nkw=2+position+dip+switch&_sacat=0) |
 
 ## Blade Controller Firmware
 The project is centered on an [ATtiny1606 microcontroller](https://ww1.microchip.com/downloads/en/DeviceDoc/ATtiny806_1606_Data_Sheet_40002029A.pdf) microcontroller in a VQFN-20 package. Other ATtiny microcontrollers that share the same footprint and pinout, such as the 806, may be used however there may be program space limitations that you will need to address. For example, the 806 has 8kb of program space. Currently this firmware is larger than 8k, therefore some features would need to be disabled in order to get it to fit on an 806. 
