@@ -100,8 +100,8 @@ The table below contains a list of all the components needed to assemble the PCB
 |                    | [GCM155L8EH104KE07D](https://www.mouser.com/ProductDetail/81-GRM155R71C104KA88) |
 |        **R1 - R7** | resistor, 1kOhm, 0402 package |
 |                    | [CR0402-JW-102GLF](https://www.mouser.com/ProductDetail/652-CR0402JW-102GLF) |
-|             **R8** | resistor, 10kOhm, 0402 package |
-|                    | [CR0402-JW-103GLF](https://www.mouser.com/ProductDetail/652-CR0402-JW-103GLF) |
+|             **R8** | resistor, 1kOhm - 10kOhm, 0402 package |
+|                    | [CR0402-JW-103GLF](https://www.mouser.com/ProductDetail/652-CR0402-JW-103GLF)(10k), [CR0402-JW-102GLF](https://www.mouser.com/ProductDetail/652-CR0402JW-102GLF)(1k) |
 |         *optional* | 2 position DIP switch |
 |                    | [CTS 208](https://www.mouser.com/ProductDetail/774-2082), [eBay options](https://www.ebay.com/sch/i.html?_nkw=2+position+dip+switch&_sacat=0) |
 
