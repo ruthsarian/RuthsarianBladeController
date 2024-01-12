@@ -6,23 +6,23 @@
 #define DEVICE_CONFIG_H_
 
 // I/O pin for managing the RGB LED strip voltage regulator; PC1
-#define LDO_PORT					PORTC
-#define LDO_PIN_bm					PIN1_bm
+#define LDO_PORT                  PORTC
+#define LDO_PIN_bm                PIN1_bm
 
 // I/O pin for switch used to enable eeprom write protect
-#define SW_WRITE_PROTECT_PORT		PORTB
-#define SW_WRITE_PROTECT_PIN_bm		PIN0_bm
-#define SW_WRITE_PROTECT_PIN_CTRL	PIN0CTRL
-#define SW_WRITE_PROTECT_bp			0
+#define SW_WRITE_PROTECT_PORT     PORTB
+#define SW_WRITE_PROTECT_PIN_bm   PIN0_bm
+#define SW_WRITE_PROTECT_PIN_CTRL PIN0CTRL
+#define SW_WRITE_PROTECT_bp       0
 
 // I/O pin for switch used to disable dmode
-#define SW_DMODE_DISABLE_PORT		PORTB
-#define SW_DMODE_DISABLE_PIN_bm		PIN1_bm
-#define SW_DMODE_DISABLE_PIN_CTRL	PIN1CTRL
-#define SW_DMODE_DISABLE_bp			1
+#define SW_DMODE_DISABLE_PORT     PORTB
+#define SW_DMODE_DISABLE_PIN_bm   PIN1_bm
+#define SW_DMODE_DISABLE_PIN_CTRL PIN1CTRL
+#define SW_DMODE_DISABLE_bp       1
 
 // how many milliseconds after power off before putting the MCU to sleep
-#define OFF_TO_SLEEP_TIME			10000
+#define OFF_TO_SLEEP_TIME         10000
 
 #ifdef __cplusplus
 extern "C" {
@@ -51,10 +51,11 @@ void blade_power_off(void);
 // get MCU Vcc
 float measure_vcc(void);
 
-// read the state of hardware switches attached to the blade
-// this is only performed during power-up as it is assumed the switches
-// are not accessible while the blade is active.
-void record_switch_config(void);
+// initalize blade switch settings
+void switch_setup(void);
+
+// get the state of hardware switches attached to the blade
+uint8_t get_switch_config(void);
 
 // report the recorded state of hardware switches
 void switch_report(void);

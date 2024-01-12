@@ -12,7 +12,7 @@
 //#define DEBUG_SERIAL_ENABLED
 #define SERIAL_BAUD_RATE 115200
 #define USART0_BAUD_RATE(BAUD_RATE) ((float)(F_CPU * 64 / (16 * (float)BAUD_RATE)) + 0.5)
-#define SERIAL_BUF_LEN	64
+#define SERIAL_BUF_LEN  64
 
 #ifdef __cplusplus
 extern "C" {

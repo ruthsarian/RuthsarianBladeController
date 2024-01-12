@@ -116,9 +116,16 @@ Below are required steps to configure your IDE environment for compiling this fi
 
 #### Arduino IDE
 - Install megaTinyCore (https://github.com/SpenceKonde/megaTinyCore)
-- Tools -\> Board: ATtiny1606, Chip: ATtiny1606, Clock: 10MHz (internal), millis()/micros() Timer: TCB0
+- **Tools** -\>
+	- **Board**: ATtiny3226/3216/1626/1616/1606/826/816/806/426/416...
+	- **Chip**: ATtiny1606
+	- **Clock**: 10 MHz internal
+	- **millis()/micros() Timer**: Disabled
+  	- **Startup Time**: 8ms
+  	- **BOD Voltage Level**: 2.6V
+   	- **BOD Mode**: Sampled/Sampled (125Hz)
 - Locate platform.txt within the megaTinyCore installation.
-	- Windows: %LOCALAPPDATA%\Arduino15\packages\megaTinyCore\hardware\megaavr\\*\<version\>*\platform.txt
+	- Windows: `%LOCALAPPDATA%\Arduino15\packages\megaTinyCore\hardware\megaavr\<version>\platform.txt`
 - Edit platform.txt as follows:
 	- locate line that begins "compiler.c.elf.flags=" and remove "-mrelax" 
 	- if you see "{build.mrelax}" instead of "-mrelax" you have a newer version of megaTinyCore
@@ -129,7 +136,7 @@ Below are required steps to configure your IDE environment for compiling this fi
 - Project -\> Properties (ALT+F7) 
 	- -\> Toolchain -\> Configuration: All Configurations 
 	- -\> Toolchain -\> AVR/GNU C Compiler -\> Symbols -\> Defined Symbols, ADD: F_CPU=10000000UL
-	- -\> Build Events -\> Post-build event command line -\> "<span>$</span>(ToolchainDir)"\avr-objcopy.exe -O ihex -j .fuse --change-section-lma .fuse=0 "<span>$</span>(OutputFileName).elf" "<span>$</span>(OutputFileName)\_fuses.hex"
+	- -\> Build Events -\> Post-build event command line -\> `"$(ToolchainDir)"\avr-objcopy.exe -O ihex -j .fuse --change-section-lma .fuse=0 "$(OutputFileName).elf" "$(OutputFileName)\_fuses.hex"`
 	- -\> Toolchain -\> AVR/GNU C Compiler -\> Miscellaneous -\> Other Flags -\> add "-flto"
 	- -\> Toolchain -\> AVR/GNU C Link -\> Miscellaneous -\> Other Flags -\> add "-mrelax"
 

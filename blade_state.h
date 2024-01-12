@@ -8,59 +8,59 @@
 #define BLADE_STATE_H_
 
 // BLADE STATE
-#define BLADE_STATE_OFF				0x00
-#define BLADE_STATE_POWER_ON		0x10
-#define BLADE_STATE_ON				0x20
-#define BLADE_STATE_CLASH			0x30
-#define BLADE_STATE_POWER_OFF		0x40
-#define BLADE_STATE_STOCK_FLICKER	0x50
-#define BLADE_STATE_RESET			0xF0
+#define BLADE_STATE_OFF           0x00
+#define BLADE_STATE_POWER_ON      0x10
+#define BLADE_STATE_ON            0x20
+#define BLADE_STATE_CLASH         0x30
+#define BLADE_STATE_POWER_OFF     0x40
+#define BLADE_STATE_STOCK_FLICKER 0x50
+#define BLADE_STATE_RESET         0xF0
 
 // how many segments in a blade
-#define BLADE_SEGMENTS	4
+#define BLADE_SEGMENTS  4
 
 // BLADE COLOR
 
 // adjust RED channel value to match stock blades which use a series diode to drop it's brightness
-#define RED_ADJUST	.79
+#define RED_ADJUST  .79
 
 // blade color table R, G, B index values
-#define RED_IDX	0
-#define GRN_IDX	1
-#define BLU_IDX	2
+#define RED_IDX   0
+#define GRN_IDX   1
+#define BLU_IDX   2
 
 // how many values per RGB color
-#define RGB_SIZE	3
+#define RGB_SIZE  3
 
 // stock blade color lookup table details
-#define STOCK_BLADE_COLORS_PER_TABLE	16	// There are 16 (4-bits) colors per color table
-#define STOCK_BLADE_COLOR_TABLES		4	// number of stock blade color tables
-#define STOCK_BLADE_COLOR_TABLE_SAVI	0	// Stock blade color table index value for Savi's Workshop lightsabers
-#define STOCK_BLADE_COLOR_TABLE_LEGACY	2	// Stock blade color table index value for Legacy lightsabers
+#define STOCK_BLADE_COLORS_PER_TABLE    16  // There are 16 (4-bits) colors per color table
+#define STOCK_BLADE_COLOR_TABLES        4   // number of stock blade color tables
+#define STOCK_BLADE_COLOR_TABLE_SAVI    0   // Stock blade color table index value for Savi's Workshop lightsabers
+#define STOCK_BLADE_COLOR_TABLE_LEGACY  2   // Stock blade color table index value for Legacy lightsabers
 
 // blade color lookup table index values
-#define STOCK_BLADE_COLOR_WHITE			0
-#define STOCK_BLADE_COLOR_RED			1
-#define STOCK_BLADE_COLOR_ORANGE		2
-#define STOCK_BLADE_COLOR_YELLOW		3
-#define STOCK_BLADE_COLOR_GREEN			4
-#define STOCK_BLADE_COLOR_CYAN			5
-#define STOCK_BLADE_COLOR_BLUE			6
-#define STOCK_BLADE_COLOR_PURPLE		7
-#define STOCK_BLADE_COLOR_DARK_PURPLE	8
-#define STOCK_BLADE_COLOR_FLASH_WHITE	9
-#define STOCK_BLADE_COLOR_FLASH_YELLOW	10
-#define STOCK_BLADE_COLOR_FLASH_ORANGE	11
-#define STOCK_BLADE_COLOR_LEN			12	// total number of colors supported by STOCK blades
+#define STOCK_BLADE_COLOR_WHITE         0
+#define STOCK_BLADE_COLOR_RED           1
+#define STOCK_BLADE_COLOR_ORANGE        2
+#define STOCK_BLADE_COLOR_YELLOW        3
+#define STOCK_BLADE_COLOR_GREEN         4
+#define STOCK_BLADE_COLOR_CYAN          5
+#define STOCK_BLADE_COLOR_BLUE          6
+#define STOCK_BLADE_COLOR_PURPLE        7
+#define STOCK_BLADE_COLOR_DARK_PURPLE   8
+#define STOCK_BLADE_COLOR_FLASH_WHITE   9
+#define STOCK_BLADE_COLOR_FLASH_YELLOW  10
+#define STOCK_BLADE_COLOR_FLASH_ORANGE  11
+#define STOCK_BLADE_COLOR_LEN           12  // total number of colors supported by STOCK blades
 
 // MEM Operation
-#define MEM_BLADE_BACKUP				0
-#define MEM_BLADE_RESTORE				1
+#define MEM_BLADE_BACKUP      0
+#define MEM_BLADE_RESTORE     1
 
 // RESET Configuration
-#define RESET_THRESHOLD_COUNT			13					// how many on/off cycles before a reset is triggered; suggested value: ((DMODE_MAX * 2) + 1)
-#define RESET_THRESHOLD_TIME			750					// maximum time blade must have been on/off in order to trigger a reset
-#define RESET_STATE_PERIOD				5000				// how long to remain in a reset state
+#define RESET_THRESHOLD_COUNT 13    // how many on/off cycles before a reset is triggered; suggested value: ((DMODE_MAX * 2) + 1)
+#define RESET_THRESHOLD_TIME  750   // maximum time blade must have been on/off in order to trigger a reset
+#define RESET_STATE_PERIOD    5000  // how long to remain in a reset state
 
 #ifdef __cplusplus
 extern "C" {
@@ -68,11 +68,11 @@ extern "C" {
 
 // a struct that contains the blade state varaibles
 struct blade_state_struct {
-	uint8_t state;              // HIGH nibble = state, LOW nibble = state step counter or other variable for use with the state
-	uint8_t color_state;        // HIGH nibble = color lookup table OR multi-color flag, LOW nibble = color
-	uint8_t dmode;              // display mode
-	uint8_t dsubmode;           // display submode
-	uint8_t dmode_step;         // multipurpose variable, usage depends on the current dmode
+  uint8_t state;              // HIGH nibble = state, LOW nibble = state step counter or other variable for use with the state
+  uint8_t color_state;        // HIGH nibble = color lookup table OR multi-color flag, LOW nibble = color
+  uint8_t dmode;              // display mode
+  uint8_t dsubmode;           // display submode
+  uint8_t dmode_step;         // multipurpose variable, usage depends on the current dmode
 };
 
 // GLOBAL: blade - the current state of the blade
@@ -125,7 +125,7 @@ void clear_segment_color(uint8_t segment);
 void clear_blade_color(void);
 
 // shift the colors of the individual segments by 1
-//	direction = 0: shift backwards
+//  direction = 0: shift backwards
 // direction != 0: shift forwards
 void rotate_segment_color(uint8_t direction);
 
@@ -154,23 +154,23 @@ void set_max_segment_brightness(uint8_t segment, uint8_t amount);
 void set_max_blade_brightness(uint8_t amount);
 
 // backup/restore the blade's color from memory (NOT EEPROM)
-//	operation = 0: backup current blade state
+//  operation = 0: backup current blade state
 // operation != 0: restore current blade state
 void mem_segment_color(uint8_t operation);
 
 // backup/restore the blade's brightness from memory (NOT EEPROM)
-//	operation = 0: backup current blade state
+//  operation = 0: backup current blade state
 // operation != 0: restore current blade state
 void mem_segment_brightness(uint8_t operation);
 
 // use to create or restore a backup of the blade's state
-//	operation = 0: backup current blade state
+//  operation = 0: backup current blade state
 // operation != 0: restore current blade state
 void mem_blade(uint8_t operation);
 
 // dump the segment brightness array to serial
 void dump_segment_brightness(void);
-	
+
 // dump the contents of blade struct to serial
 void dump_blade_state(void);
 
