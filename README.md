@@ -1,4 +1,4 @@
-# Ruthsarian Blade Controller
+# Ruthsarian Blade Controller - v4.1
 The Ruthsarian Blade Controller is a replacement blade controller for [lightsaber blades](https://www.shopdisney.com/galaxys-edge-lightsaber-blade-36-star-wars-galaxys-edge-400021020917.html) from [Galaxy's Edge](https://en.wikipedia.org/wiki/Star_Wars:_Galaxy%27s_Edge). It replaces [the blade controller](https://www.flickr.com/photos/ruthsarian/albums/72157719940747147) and reuses the rest of the blade's hardware including the strip of RGB LEDs.
 
 To make full use of this project you will need to assemble a blade controller, program it, then install it into a Galaxy's Edge lighstaber blade. Documentation on assembly and programming are contained within this README. [This YouTube playlist](https://www.youtube.com/playlist?list=PL1LWtA1iy9hvn_TC9zpnyU5pupyrw3pX3) contains videos documenting the development, assembly, and installation process of this PCB. A more in-depth series of videos on assembly, programming, and installation are forthcoming.
