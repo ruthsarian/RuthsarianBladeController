@@ -30,7 +30,7 @@ uint8_t stock_blade_colors[STOCK_BLADE_COLOR_LEN][RGB_SIZE] = {
   //  RED, GRN, BLU
   { 112, 112, 112 },  //  0:STOCK_BLADE_COLOR_WHITE
   { 255,   0,   0 },  //  1:STOCK_BLADE_COLOR_RED
-  { 255, 102,   0 },  //  2:STOCK_BLADE_COLOR_ORANGE
+  { 192,  32,   0 },  //  2:STOCK_BLADE_COLOR_ORANGE
   { 152, 152,   0 },  //  3:STOCK_BLADE_COLOR_YELLOW
   {   0, 255,   0 },  //  4:STOCK_BLADE_COLOR_GREEN
   {   0, 152, 152 },  //  5:STOCK_BLADE_COLOR_CYAN
@@ -79,22 +79,22 @@ uint8_t stock_blade_color_table_lookup[STOCK_BLADE_COLOR_TABLES][STOCK_BLADE_COL
     STOCK_BLADE_COLOR_FLASH_YELLOW  // purple
   },
   {  // Legacy Lightsabers Colors
-    STOCK_BLADE_COLOR_YELLOW,       // 0 Temple Guard
-    STOCK_BLADE_COLOR_RED,          // 1 Kylo Ren
-    STOCK_BLADE_COLOR_BLUE,         // 2 Rey/Anakin, Rey/Anakin Reforged, Ahsoka (CW)
-    STOCK_BLADE_COLOR_PURPLE,       // 3 Mace
-    STOCK_BLADE_COLOR_RED,          // 4 Ventress
-    STOCK_BLADE_COLOR_WHITE,        // 5 Ahsoka (Rebels)
-    STOCK_BLADE_COLOR_GREEN,        // 6 Luke
-    STOCK_BLADE_COLOR_RED,          // 7 Vader; long fade out of segment 4
-    STOCK_BLADE_COLOR_RED,          // 8 Maul
-    STOCK_BLADE_COLOR_BLUE,         // 9 Obi-wan, Ben
-    STOCK_BLADE_COLOR_WHITE,
-    STOCK_BLADE_COLOR_WHITE,
-    STOCK_BLADE_COLOR_WHITE,
-    STOCK_BLADE_COLOR_WHITE,
-    STOCK_BLADE_COLOR_WHITE,
-    STOCK_BLADE_COLOR_WHITE
+    STOCK_BLADE_COLOR_YELLOW,       //  0 Temple Guard
+    STOCK_BLADE_COLOR_RED,          //  1 Kylo Ren
+    STOCK_BLADE_COLOR_BLUE,         //  2 Rey/Anakin, Rey/Anakin Reforged, Ahsoka (CW)
+    STOCK_BLADE_COLOR_PURPLE,       //  3 Mace
+    STOCK_BLADE_COLOR_RED,          //  4 Ventress
+    STOCK_BLADE_COLOR_WHITE,        //  5 Ahsoka (Rebels)
+    STOCK_BLADE_COLOR_GREEN,        //  6 Luke
+    STOCK_BLADE_COLOR_RED,          //  7 Vader
+    STOCK_BLADE_COLOR_RED,          //  8 Maul
+    STOCK_BLADE_COLOR_BLUE,         //  9 Obi-wan, Ben
+    STOCK_BLADE_COLOR_ORANGE,       // 10 Baylan Skoll, Shin Hati
+    STOCK_BLADE_COLOR_WHITE,        // 11 unused
+    STOCK_BLADE_COLOR_WHITE,        // 12 unused
+    STOCK_BLADE_COLOR_WHITE,        // 13 unused
+    STOCK_BLADE_COLOR_WHITE,        // 14 unused
+    STOCK_BLADE_COLOR_WHITE         // 15 unused
   },
   {  // Legacy Lightsabers CLASH Colors
     STOCK_BLADE_COLOR_FLASH_WHITE,  // yellow
@@ -107,7 +107,7 @@ uint8_t stock_blade_color_table_lookup[STOCK_BLADE_COLOR_TABLES][STOCK_BLADE_COL
     STOCK_BLADE_COLOR_FLASH_ORANGE, // red
     STOCK_BLADE_COLOR_FLASH_ORANGE, // red
     STOCK_BLADE_COLOR_FLASH_YELLOW, // blue
-    STOCK_BLADE_COLOR_FLASH_YELLOW, // white
+    STOCK_BLADE_COLOR_FLASH_YELLOW, // orange
     STOCK_BLADE_COLOR_FLASH_YELLOW, // white
     STOCK_BLADE_COLOR_FLASH_YELLOW, // white
     STOCK_BLADE_COLOR_FLASH_YELLOW, // white

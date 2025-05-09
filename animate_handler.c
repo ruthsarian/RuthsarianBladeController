@@ -116,6 +116,10 @@ void animate_handler(void) {
                     next_event_time += 85;
                     break;
 
+                  case 10: // baylan skoll/ shin hati
+                    next_event_time += 140;
+                    break;
+
                   case 9: // obi-wan, ben solo
                   case 2: // rey, rey reforge, ahsoka (clone wars)
                     next_event_time += 425;

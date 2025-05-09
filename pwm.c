@@ -48,7 +48,7 @@ ISR(TCA0_LUNF_vect) {
     if (color_derez != SINGLE_COLOR_DEREZ || current_segment == 0) {
 
       // set the current segment's color;
-      if (   RED_VAL != DEREZ(segment_color[current_segment][RED_IDX])
+      if ( RED_VAL != DEREZ(segment_color[current_segment][RED_IDX])
         || GRN_VAL != DEREZ(segment_color[current_segment][GRN_IDX])
         || BLU_VAL != DEREZ(segment_color[current_segment][BLU_IDX])
       ) {
