@@ -30,16 +30,17 @@ uint8_t stock_blade_colors[STOCK_BLADE_COLOR_LEN][RGB_SIZE] = {
   //  RED, GRN, BLU
   { 112, 112, 112 },  //  0:STOCK_BLADE_COLOR_WHITE
   { 255,   0,   0 },  //  1:STOCK_BLADE_COLOR_RED
-  { 192,  32,   0 },  //  2:STOCK_BLADE_COLOR_ORANGE
+  { 255, 102,   0 },  //  2:STOCK_BLADE_COLOR_ORANGE
   { 152, 152,   0 },  //  3:STOCK_BLADE_COLOR_YELLOW
   {   0, 255,   0 },  //  4:STOCK_BLADE_COLOR_GREEN
   {   0, 152, 152 },  //  5:STOCK_BLADE_COLOR_CYAN
   {   0,   0, 255 },  //  6:STOCK_BLADE_COLOR_BLUE
   { 152,   0, 152 },  //  7:STOCK_BLADE_COLOR_PURPLE
   {  16,   0,  32 },  //  8:STOCK_BLADE_COLOR_DARK_PURPLE
-  { 128, 128, 128 },  //  9:STOCK_BLADE_COLOR_FLASH_WHITE
-  { 255, 255,   0 },  // 10:STOCK_BLADE_COLOR_FLASH_YELLOW
-  { 255,  64,   0 }   // 11:STOCK_BLADE_COLOR_FLASH_ORANGE
+  { 192,  32,   0 },  //  9:STOCK_BLADE_COLOR_ORANGE_RED 
+  { 128, 128, 128 },  // 10:STOCK_BLADE_COLOR_FLASH_WHITE
+  { 255, 255,   0 },  // 11:STOCK_BLADE_COLOR_FLASH_YELLOW
+  { 255,  64,   0 }   // 12:STOCK_BLADE_COLOR_FLASH_ORANGE
 };
 uint8_t stock_blade_color_table_lookup[STOCK_BLADE_COLOR_TABLES][STOCK_BLADE_COLORS_PER_TABLE] = {
   {  // Savi's Workship Lightsabers Colors
@@ -89,7 +90,7 @@ uint8_t stock_blade_color_table_lookup[STOCK_BLADE_COLOR_TABLES][STOCK_BLADE_COL
     STOCK_BLADE_COLOR_RED,          //  7 Vader
     STOCK_BLADE_COLOR_RED,          //  8 Maul
     STOCK_BLADE_COLOR_BLUE,         //  9 Obi-wan, Ben
-    STOCK_BLADE_COLOR_ORANGE,       // 10 Baylan Skoll, Shin Hati
+    STOCK_BLADE_COLOR_ORANGE_RED,   // 10 Baylan Skoll, Shin Hati
     STOCK_BLADE_COLOR_WHITE,        // 11 unused
     STOCK_BLADE_COLOR_WHITE,        // 12 unused
     STOCK_BLADE_COLOR_WHITE,        // 13 unused

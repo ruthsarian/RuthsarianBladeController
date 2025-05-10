@@ -48,10 +48,11 @@
 #define STOCK_BLADE_COLOR_BLUE          6
 #define STOCK_BLADE_COLOR_PURPLE        7
 #define STOCK_BLADE_COLOR_DARK_PURPLE   8
-#define STOCK_BLADE_COLOR_FLASH_WHITE   9
-#define STOCK_BLADE_COLOR_FLASH_YELLOW  10
-#define STOCK_BLADE_COLOR_FLASH_ORANGE  11
-#define STOCK_BLADE_COLOR_LEN           12  // total number of colors supported by STOCK blades
+#define STOCK_BLADE_COLOR_ORANGE_RED    9
+#define STOCK_BLADE_COLOR_FLASH_WHITE   10
+#define STOCK_BLADE_COLOR_FLASH_YELLOW  11
+#define STOCK_BLADE_COLOR_FLASH_ORANGE  12
+#define STOCK_BLADE_COLOR_LEN           13  // total number of colors supported by STOCK blades
 
 // MEM Operation
 #define MEM_BLADE_BACKUP      0

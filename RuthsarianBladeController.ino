@@ -1,5 +1,5 @@
 /*
- * GE Custom Blade Controller : v4.2 : ruthsarian@gmail.com
+ * GE Custom Blade Controller : v4.2.1 : ruthsarian@gmail.com
  * A replacement blade controller for Galaxy's Edge lightsaber blades.
  * 
  * To compile and upload with the Arduino IDE, this project requires the
